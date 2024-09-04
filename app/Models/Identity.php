@@ -36,6 +36,10 @@ class Identity extends Model
     {
         return $this->hasOne(Address::class);
     }
+    public function subscription()
+    {
+        return $this->hasMany(Subscription::class);
+    }
 
     public function profile()
     {

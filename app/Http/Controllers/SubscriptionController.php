@@ -6,15 +6,15 @@ use App\Models\Subscription;
 use App\Http\Requests\StoreSubscriptionRequest;
 use App\Http\Requests\UpdateSubscriptionRequest;
 use App\Services\SubscriptionService;
-use App\Services\GeolocationService;
-use GuzzleHttp\Psr7\Message;
+// use App\Services\GeolocationService;
+// use GuzzleHttp\Psr7\Message;
 
 class SubscriptionController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index()
     {
         //
         
@@ -37,6 +37,7 @@ class SubscriptionController extends Controller
     }
 
     public function addLearnersToMySubscription(Request $request){
+    //    dd( $request->all());
         $subscriptionLearner = SubscriptionService::addLearnersToMySubscription($request);
         return response()->json(['error'=>false, 'message'=>"You have added a learner to your subscription.", 'data'=>$subscriptionLearner],201);
     }
@@ -66,10 +67,12 @@ class SubscriptionController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($subscription_id, Request $request)
+    public function destroy($subscription_id)
     {
         //
-        return SubscriptionService::removeLearnerFromSubs($subscription_id, $request->learner_id);
+       $subsc = Subscription::deleteSubscription($subscription_id);
+    //    dd($subsc);
+       return response()->json(['error'=>false, 'message'=> 'Subscription deleted'],202);
         
     }
 
@@ -78,5 +81,17 @@ class SubscriptionController extends Controller
          $subscriptions = Subscription::getMySubscriptions($user->identity_id);
          return response()->json(['error'=>false, 'message'=>'success', 'data'=>$subscriptions]);
          dd($subscriptions);
+    }
+
+    public function getInvitedLearners($subscription_id){
+
+        $response =  Subscription::getInvitedLearners($subscription_id);
+        return response()->json(['error'=>false, 'message'=>'success', 'data'=>$response]);
+        dd($subscription_id);
+    }
+
+    public function removeLearners($subscription_id, Request $request){
+        SubscriptionService::removeLearnerFromSubs($subscription_id, $request->learner_id);
+        return response()->json(['error'=>false, 'message'=>"You have removed the learner from your package"],202);
     }
 }

@@ -29,14 +29,14 @@ class SubscriptionService
     }
 
     public static function removeLearnerFromSubs($subscription_id, $learner_id){
-        Subscription::deleteSubscription($subscription_id, $learner_id);
+        $delete = Subscription::removeLearnerFromSubscription($subscription_id, $learner_id);
         $subscription = Subscription::getOne($subscription_id);
         if($subscription){
             $newData['added_learners'] = $subscription->added_learners - 1;
-            
+            Subscription::updateSubscription($newData, $subscription_id);
         }
+        return $delete;
     }
-
     public static function addLearnersToMySubscription(Request $request){
         $user = auth()->user();
         $canAdd = self::canAddLearner($user->identity_id, $request->subscription_id);
@@ -50,9 +50,7 @@ class SubscriptionService
             $data['max_allowed_courses'] = $canAdd['subs']->max_allowed_courses;
             $data['subscription_id'] = $canAdd['subs']->id;
         }
-
         return Subscription::register($data);
-
     }
     public static function canAddLearner($identity_id, $subscription_id){
         $subs = Subscription::getOne($subscription_id);

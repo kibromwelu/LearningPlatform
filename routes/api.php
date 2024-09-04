@@ -40,7 +40,8 @@ Route::prefix('auth')->group( function(){
     Route::apiResource('address', AddressController::class);//use api-apiResource instead of apiResource
     Route::apiResource('subs', SubscriptionController::class);
     Route::post('/invite-learner', [SubscriptionController::class, 'addLearnersToMySubscription']);
-    Route::delete('/remove-learner', [SubscriptionController::class, 'removeLearner']);
+    Route::get('/invited-learners/{id}', [SubscriptionController::class, 'getInvitedLearners']);
+    Route::delete('/remove-learners/{id}', [SubscriptionController::class, 'removeLearners']);
     Route::apiResource('learners', LearnerController::class);
     Route::apiResource('courses', CourseController::class);
     Route::apiResource('enrollments', CourseEnrollmentController::class);
