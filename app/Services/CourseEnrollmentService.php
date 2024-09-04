@@ -19,6 +19,22 @@ class CourseEnrollmentService
         return $enrollment;
     }
 
+    public static function removeEnrollmentFromSubscription($courseEnrollmentId){
+        // fetch enrollment
+        $enrollment = CourseEnrollment::getOne($courseEnrollmentId);
+        // delete enrollment 
+        $removedLearner = CourseEnrollment::deleteEnrollment($courseEnrollmentId);
+        // fetch subscription
+        $subs = Subscription::getOne($enrollment->subscription_id);
+        if($removedLearner){
+            // decrement enrolled courses in subscription
+            $data['enrolled_courses'] = $subs->enrolled_courses - 1;
+        }
+        // update supscription
+        return Subscription::updateSubscription($data, $enrollment->subscription_id);
+
+    }
+
     public static function checkEnrollmentPermission($subscriptionId){
         $subs = Subscription::getOne($subscriptionId);
         if(!$subs){

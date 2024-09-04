@@ -66,10 +66,10 @@ class SubscriptionController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($identity_id)
+    public function destroy($subscription_id, Request $request)
     {
         //
-        return Subscription::deleteSubscription($identity_id);
+        return SubscriptionService::removeLearnerFromSubs($subscription_id, $request->learner_id);
         
     }
 

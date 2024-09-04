@@ -64,7 +64,7 @@ class CourseEnrollmentController extends Controller
      */
     public function destroy($courseEnrollmentId)
     {
-        $response = CourseEnrollment::deleteEnrollment($courseEnrollmentId);
-        return response()->json(['error'=>false, 'message'=>$response],202);
+        $response = CourseEnrollmentService::removeEnrollmentFromSubscription($courseEnrollmentId);
+        return response()->json(['error'=>false, 'message'=>"Item deleted"],202);
     }
 }

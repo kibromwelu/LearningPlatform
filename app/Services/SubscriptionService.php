@@ -28,6 +28,15 @@ class SubscriptionService
         return Subscription::register($data);
     }
 
+    public static function removeLearnerFromSubs($subscription_id, $learner_id){
+        Subscription::deleteSubscription($subscription_id, $learner_id);
+        $subscription = Subscription::getOne($subscription_id);
+        if($subscription){
+            $newData['added_learners'] = $subscription->added_learners - 1;
+            
+        }
+    }
+
     public static function addLearnersToMySubscription(Request $request){
         $user = auth()->user();
         $canAdd = self::canAddLearner($user->identity_id, $request->subscription_id);

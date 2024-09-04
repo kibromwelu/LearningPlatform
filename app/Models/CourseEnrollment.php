@@ -74,7 +74,7 @@ class CourseEnrollment extends Model
     }
 
     public static function getOne($id){
-        return  self::with(['learner','course'])->find($id);
+        return  self::with(['learner','course','subscription'])->find($id);
     }
     public static function deleteEnrollment($id){
         $enrollment = self::find($id);

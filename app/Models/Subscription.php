@@ -43,7 +43,6 @@ class Subscription extends Model
     }
 
     public static function updateSubscription($data,$id){
-        // dd($data);
         $subscription = self::find($id);
         $subscription->update($data);
         return $subscription;
