@@ -13,12 +13,10 @@ return new class extends Migration
     {
         Schema::create('answer_logs', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('assessment_attempt_id');
-            $table->string('question_id');
-            $table->string('learner_answer');
+            $table->foreignUuid('assessment_attempt_id');
+            $table->foreignUuid('question_id');
+            $table->foreignUuid('learner_answer');
             $table->boolean('is_correct')->nullable()->default(false);
-            $table->foreign('assessment_attempt_id')->references('id')->on('assessment_attempts');
-            $table->foreign('question_id')->references('id')->on('questions');
             $table->string('state')->default('in_progress');
             $table->softDeletes();
             $table->timestamps();

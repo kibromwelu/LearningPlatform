@@ -23,7 +23,7 @@ class StoreAssessmentAttemptRequest extends FormRequest
     {
         return [
             //
-            'learner_id'=>'required|uuid',
+            'learner_id'=>'uuid',
             'course_id'=>'required|uuid',
             'score'=>'decimal:2',
         ];

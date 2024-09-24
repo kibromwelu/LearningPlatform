@@ -22,7 +22,7 @@ class StoreCourseEnrollmentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'learner_id'=>'required|uuid',
+            'learner_id'=>'uuid',
             'course_id'=>'required|uuid',
             'subscription_id'=>'required',
         ];

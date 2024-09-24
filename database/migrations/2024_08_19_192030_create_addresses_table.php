@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('addresses', function (Blueprint $table) {
            
             $table->uuid('id')->primary();
-            $table->foreignId('identity_id');
+            $table->foreignUuid('identity_id');
             $table->string('residence_id')->nullable();
-            $table->string('mobile_number')->nullable();
             $table->string('phone')->nullable();
+            $table->string('mobile_number')->nullable();
             $table->string('email')->nullable();
             $table->string('website')->nullable();
             $table->string('pobox')->nullable();

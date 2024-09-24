@@ -7,7 +7,9 @@ use App\Models\Subscription;
 class CourseEnrollmentService 
 {
     public static function registerEnrollment($data){
+
         $permission = self::checkEnrollmentPermission($data['subscription_id']);
+        // dd($data);
         if($permission['error']){
             throw new \Exception($permission['message'], 400);
         }

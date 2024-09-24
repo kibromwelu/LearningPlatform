@@ -10,23 +10,46 @@ class SubscriptionService
 {
     public static function subscribe(Request $request)
     {
-        
         $data = $request->all();
+        $user= Auth()->user();
         $package = $request->package;
         $paymentMode = $request->mode;
-
-        $user = Identity::find($request->identity_id);
-        $currencyType = $user->isoCode == 'ET' ? 'ETB' : "USD";
+        $idnetity = Identity::find($user->identity_id);
+        $currencyType = $user->isoCode == 'ET' ? 'ETB' : 'USD';
         $data['currency'] = $currencyType;
-        if (!isset(CostRules::PACKAGES[$package]['pricing'][$paymentMode][$currencyType])) {
-            return response()->json(['error' => 'Invalid package or payment time range'], 400);
+        $data['identity_id'] = $user->identity_id;
+        if ($package === 'enterprise') {
+            $selectedRange = $request->range; 
+            
+            // Validate the selected range
+            if (!isset(CostRules::PACKAGES[$package][$selectedRange])) {
+                throw new Exception("Invalid range for the enterprise package.", 400);
+            }
+
+            // Validate and retrieve the price based on the selected range, payment mode, and currency
+            if (!isset(CostRules::PACKAGES[$package][$selectedRange]['pricing'][$paymentMode][$currencyType])) {
+                throw new Exception("Invalid payment mode or currency for the selected range.", 400);
+            }
+
+            $data['max_allowed_learners'] = CostRules::PACKAGES[$package][$selectedRange]['max_allowed_learners'];
+            $data['max_allowed_courses'] = CostRules::PACKAGES[$package][$selectedRange]['max_courses'];
+            $data['payment'] = CostRules::PACKAGES[$package][$selectedRange]['pricing'][$paymentMode][$currencyType];
+
+        } else {
+            // Handle non-enterprise packages
+            if (!isset(CostRules::PACKAGES[$package]['pricing'][$paymentMode][$currencyType])) {
+                throw new Exception("Invalid package or payment time range", 400);
+            }
+
+            $data['max_allowed_learners'] = CostRules::PACKAGES[$package]['max_allowed_learners'];
+            $data['max_allowed_courses'] = CostRules::PACKAGES[$package]['max_courses'];
+            $data['payment'] = CostRules::PACKAGES[$package]['pricing'][$paymentMode][$currencyType];
         }
-        $data['max_allowed_learners'] = CostRules::PACKAGES[$package]['max_allowed_learners'];
-        $data['max_allowed_courses'] = CostRules::PACKAGES[$package]['max_courses'];
-        $data['payment'] = CostRules::PACKAGES[$package]['pricing'][$paymentMode][$currencyType];
-    //    dd($data);
+        // dd($data);
         return Subscription::register($data);
+        
     }
+  
 
     public static function removeLearnerFromSubs($subscription_id, $learner_id){
         $delete = Subscription::removeLearnerFromSubscription($subscription_id, $learner_id);
@@ -37,15 +60,16 @@ class SubscriptionService
         }
         return $delete;
     }
-    public static function addLearnersToMySubscription(Request $request){
+    public static function addLearnersToMySubscription($formData){
+        // dd();
         $user = auth()->user();
-        $canAdd = self::canAddLearner($user->identity_id, $request->subscription_id);
+        // dd($user);
+        $canAdd = self::canAddLearner($user->identity_id, $formData['subscription_id']);
         if($canAdd['error']==true){
             throw new \Exception($canAdd['message'], 400);
         }else{
             $data = $canAdd['subs']->only('package', 'mode', 'currency', 'payment');
-            $data['identity_id'] = $request->identity_id;
-            
+            $data['identity_id'] = $formData['identity_id'];
             $data['max_allowed_learners'] = 0;
             $data['max_allowed_courses'] = $canAdd['subs']->max_allowed_courses;
             $data['subscription_id'] = $canAdd['subs']->id;
@@ -54,6 +78,7 @@ class SubscriptionService
     }
     public static function canAddLearner($identity_id, $subscription_id){
         $subs = Subscription::getOne($subscription_id);
+        // dd($subs);
         if(!$subs || $subs->identity_id != $identity_id){
             return [
                 'error'=> true,
@@ -88,5 +113,21 @@ class SubscriptionService
         $data['payment'] = CostRules::PACKAGES[$package]['pricing'][$paymentMode][$currencyType];;
         return Subscription::updateSubscription($data, $identity_id);
         
+    }
+    public function enterPriseSubscription(Request $request){
+        $data = $request->all();
+        $package = $request->package;
+        $paymentMode = $request->mode;
+        $user = Identity::getOne($request->identity_id);
+        // dd($user);
+        $currencyType = $user->profile->isoCode == 'ET' ? 'ETB' : "USD";
+        $data['currency'] = $currencyType;
+        if (!isset(CostRules::PACKAGES[$package]['pricing'][$paymentMode][$currencyType])) {
+            throw new Exception("Invalid package or payment time range",400);
+        }
+        $data['max_allowed_learners'] = CostRules::PACKAGES[$package]['max_allowed_learners'];
+        $data['max_allowed_courses'] = CostRules::PACKAGES[$package]['max_courses'];
+        $data['payment'] = CostRules::PACKAGES[$package]['pricing'][$paymentMode][$currencyType];
+        return Subscription::register($data); 
     }
 }

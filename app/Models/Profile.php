@@ -6,12 +6,12 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Model;
 // use App\Http\Requests\UpdateprofileRequest;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 class Profile extends Model
 {
     // use RecordState;
-
-    // use HasUuids;
+    use HasUuids;
     public $incrementing = false;
     protected $fillable = [
         'id',
@@ -32,6 +32,7 @@ class Profile extends Model
         'weight',
         'avatar',
         'cover',
+        'isoCode',
         'file_number',
         'state',
         'status',
@@ -47,15 +48,14 @@ class Profile extends Model
         return Profile::where('identity_id', $iid)->firstOrFail();
     }
     public static function register($data){
-        // dd($data);
-        $profile = self::create($data);
+        
         $profile = self::updateOrCreate(['identity_id'=>$data['identity_id']],$data);
         return $profile;
     }
+
     public static function updateProfile( $request,$id)
     {
         $data = $request->all();
-        // dd($data);
         $data['identity_id']= $id;
         if ($request->hasFile('cover')) {
             $cover = $request->file('cover');
@@ -63,7 +63,6 @@ class Profile extends Model
             $cover->storeAs('uploads/covers', $coverFileName, 'public');
             $data['cover'] = $coverFileName;
         }
-        // dd($data);
         if ($request->hasFile('profile_pic')) {
             $file = $request->file('profile_pic');
             $fileName = time() . '_profile_' . $file->getClientOriginalName();
@@ -76,7 +75,7 @@ class Profile extends Model
         if(!$profile){
             $data['identity_id'] = $id;
         }
-        // dd($data);
+    
        
         $profile = $profile ? $profile->update($data) : self::register($data);
         $profile = self::where('identity_id',$id)->first();

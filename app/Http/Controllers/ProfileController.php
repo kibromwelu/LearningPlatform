@@ -7,6 +7,7 @@ use App\Models\profile;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreprofileRequest;
 use App\Http\Requests\UpdateprofileRequest;
+use App\Services\FileService;
 
 class ProfileController extends Controller
 {
@@ -50,24 +51,9 @@ class ProfileController extends Controller
 
     public function getProfilePic($filename)
     {
-        $filePath = 'uploads/profiles/' . $filename;
-        // $profile = 
-        if (Storage::disk('public')->exists($filePath)) {
-            $fileContent = Storage::disk('public')->get($filePath);
-            
-            // Determine the mime type of the file
-            $mimeType = Storage::disk('public')->mimeType($filePath);
+        $filePath = 'uploads/profiles/' ;
 
-            // Return the file content as a response
-            return response($fileContent, 200)->header('Content-Type', $mimeType);
-            
-            // return Storage::disk('public')->download($filePath);//uncomment to download the image
-        }
-        return response()->json([
-            'success' => false,
-            'message' => 'File not found.',
-        ], 404);
+        return FileService::getFile($filePath, $filename);
     }
-
 
 }

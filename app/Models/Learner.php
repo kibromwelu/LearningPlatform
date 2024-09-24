@@ -18,6 +18,14 @@ class Learner extends Model
     {
         return $this->hasMany(CourseEnrollment::class);
     }
+    public function identity()
+    {
+        return $this->belongsTo(Identity::class, 'identity_id')->select('id', 'first_name', 'last_name');
+    }
+    public function examrequests()
+    {
+        return $this->hasMany(ExamRequest::class);
+    }
     public function learnerprogress()
     {
         return $this->hasMany(LearnerProgress::class);
@@ -25,6 +33,10 @@ class Learner extends Model
     public function assessmentattempt()
     {
         return $this->hasMany(AssessmentAttempt::class);
+    }
+    public function discussions()
+    {
+        return $this->hasMany(CourseDiscussion::class); 
     }
 
     public static function registerLearner($data){

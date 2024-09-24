@@ -53,14 +53,11 @@ class User extends Authenticatable implements JWTSubject
 
     public static function registerUser($data)
     {
+    
+        $user = self::updateOrCreate(['identity_id'=>$data['identity_id']],$data);
+        $token = Auth::fromUser($user);
         
-            $user = self::create($data);
-            // dd($user);
-            $token = Auth::fromUser($user);
-            return [$user, $token];
-            // return $user;
-       
-       
+        return [$user, $token];
     }
     public static function deleteUser($id)
     {
@@ -75,11 +72,18 @@ class User extends Authenticatable implements JWTSubject
             return ['message' => 'Invalid credentials', 'error'=>true];
         }
         $user = auth()->user();
+        $userDetail = Identity::getOne($user->identity_id);
+        if($userDetail->profile && $userDetail->profile->avatar)
+        $profile_link = url('/').'/api/auth/profile-pic/'.$userDetail->profile->avatar;
+        else{
+            $profile_link = 'not found';
+        }
         return [
             'access_token' => $token,
             'user'=> $user,
+            'profile_link'=>$profile_link,
             'token_type' => 'Bearer',
-            'expires_in' => Auth::factory()->getTTL() * 60,
+            'expires_in' => Auth::factory()->getTTL() * 3600,
         ];
     }
     public function getJWTIdentifier()

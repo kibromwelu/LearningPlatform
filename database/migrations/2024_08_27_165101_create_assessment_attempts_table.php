@@ -13,15 +13,11 @@ return new class extends Migration
     {
         Schema::create('assessment_attempts', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('learner_id');
-            $table->string('course_id');
-            $table->string('topic_id');
-            $table->decimal('score');
-            $table->foreign('learner_id')->references('id')->on('learners');
-            $table->foreign('course_id')->references('id')->on('courses');
-            $table->foreign('topic_id')->references('id')->on('topics');
+            $table->foreignUuid('learner_id');
+            $table->foreignUuid('course_id');
+            $table->foreignUuid('topic_id');
+            $table->decimal('score')->default(0);
             $table->string('state')->default('pending');
-            // $table->foreign('topic_id')->references('id')->on('topics');
             $table->softDeletes();
             $table->timestamps();
         });

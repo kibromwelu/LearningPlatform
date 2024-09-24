@@ -20,6 +20,18 @@ class Course extends Model
     {
         return $this->hasMany(CourseEnrollment::class);
     }
+    public function modules()
+    {
+        return $this->hasMany(Module::class);
+    }
+    public function topics()
+    {
+        return $this->hasManyThrough(Topic::class, Module::class);
+    }
+    public function examrequests()
+    {
+        return $this->hasMany(ExamRequest::class);
+    }
     public function learnerprogress()
     {
         return $this->hasMany(LearnerProgress::class);
@@ -27,6 +39,10 @@ class Course extends Model
     public function assessmentattempt()
     {
         return $this->hasMany(AssessmentAttempt::class);
+    }
+    public function discussions()
+    {
+        return $this->hasMany(CourseDiscussion::class); 
     }
     public static function registerCourse($data){
         return self::create($data);

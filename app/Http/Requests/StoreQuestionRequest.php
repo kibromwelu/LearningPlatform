@@ -11,7 +11,7 @@ class StoreQuestionRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,6 +23,9 @@ class StoreQuestionRequest extends FormRequest
     {
         return [
             //
+            'topic_id'=>'uuid|required',
+            'question'=>'required|string',
+            "answer_key"=>'uuid'
         ];
     }
 }

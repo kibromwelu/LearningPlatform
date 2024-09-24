@@ -55,8 +55,8 @@ class LearnerProgressController extends Controller
     public function update(UpdateLearnerProgressRequest $request, $id)
     {
         //
-        $response = LearnerProgress::updateProgess($request->only('state'), $id);
-        return response()->json(['error'=>false, 'message'=>'Updated successfully', 'data'=>$response]);
+        // $response = LearnerProgress::updateProgess($request->validated(), $requestid);
+        // return response()->json(['error'=>false, 'message'=>'Updated successfully', 'data'=>$response]);
     }
 
     /**

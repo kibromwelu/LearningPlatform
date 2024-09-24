@@ -26,7 +26,7 @@ class StoreSubscriptionRequest extends FormRequest
         return [
             // 'identity_id' => 'required|uuid|max:255',
             // 'id' => 'required|uuid',
-            'identity_id' => 'required|numeric|max:255',
+            'identity_id' => 'uuid',
             'package' => 'string|in:basic,standard,premium,family,enterprise,freemium',
             'mode' => 'string|in:monthly,quarterly,annually',
             'payment' => 'numeric',

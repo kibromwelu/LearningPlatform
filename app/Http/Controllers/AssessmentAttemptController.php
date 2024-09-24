@@ -3,6 +3,7 @@
 
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 use App\Services\AssessmentAttemptService;
 use App\Models\AssessmentAttempt;
@@ -26,13 +27,9 @@ class AssessmentAttemptController extends Controller
      */
     public function store(StoreAssessmentAttemptRequest $request)
     {
-        //
-        // dd($request->all());
-
-        $res = AssessmentAttemptService::registerAttempt($request);
-        
-        $response = AssessmentAttempt::register($request->all());
-        return response()->json(['error'=>false, 'message'=>"Attempt recorded", 'data'=>$response], 201);
+       
+        $res = AssessmentAttemptService::attempt($request, $request->enrollment_id);
+        return response()->json(['error'=>false, 'message'=>"Attempt recorded", 'data'=>$res], 201);
     }
 
     /**

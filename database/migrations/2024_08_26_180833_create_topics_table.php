@@ -15,7 +15,12 @@ return new class extends Migration
         Schema::create('topics', function (Blueprint $table) {
 
             $table->uuid('id')->primary(); 
-            $table->string('title');
+            $table->foreignUuid('module_id');
+            $table->string('name');
+            $table->string('description')->nullable();
+            $table->integer('minutes')->nullable();
+            $table->integer('number_of_questions_to_ask');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

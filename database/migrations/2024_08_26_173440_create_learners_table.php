@@ -16,12 +16,7 @@ return new class extends Migration
             Schema::create('learners', function (Blueprint $table) {
 
                 $table->uuid('id')->primary();
-                $table->unsignedBigInteger('identity_id'); // Foreign key column
-    
-                // Define the foreign key relationship
-                $table->foreign('identity_id')
-                      ->references('id')
-                      ->on('identities');
+                $table->foreignUuid('identity_id'); 
                 $table->timestamps();
             });
            

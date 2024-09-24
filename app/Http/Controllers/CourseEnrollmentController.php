@@ -14,9 +14,9 @@ class CourseEnrollmentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index($course_id,Request $request)
     {
-        $response = CourseEnrollment::getAll($request);
+        $response = CourseEnrollment::getAll($course_id,$request);
         return response()->json(['error'=>false, 'message'=>'success', 'data'=>$response],200);
     }
 
@@ -28,7 +28,7 @@ class CourseEnrollmentController extends Controller
     public function store(StoreCourseEnrollmentRequest $request)
     {
         //
-
+        // dd($request);
         $response = CourseEnrollmentService::registerEnrollment($request->validated());
         return response()->json(['error'=>false, 'message'=>"Enrolled successfully", 'data'=>$response],201);
     }

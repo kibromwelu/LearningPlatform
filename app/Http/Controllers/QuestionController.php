@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Question;
+use App\Services\QuestionService;
 use App\Http\Requests\StoreQuestionRequest;
 use App\Http\Requests\UpdateQuestionRequest;
 
@@ -11,43 +12,25 @@ class QuestionController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index($topic_id)
     {
-        //
+        $response = Question::getAll($topic_id);
+        return response()->json(['error'=>false, 'data'=>$response],200);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreQuestionRequest $request)
     {
-        //
+        $response = Question::register($request->all());
+        return response()->json(['error'=>false, 'data'=>$response],201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Question $question)
+  
+    public function show( $topic_id)
     {
-        //
+        $response = QuestionService::getTopicQuestions($topic_id);
+        return response()->json(['error'=>false, 'data'=>$response],200);
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Question $question)
-    {
-        //
-    }
-
+    
     /**
      * Update the specified resource in storage.
      */

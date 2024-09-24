@@ -26,7 +26,6 @@ return new class extends Migration
             $table->string('disability')->nullable();
             $table->string('state')->default("null");
             $table->json('completed_steps')->nullable();
-            $table->string('isoCode')->nullable();
             $table->string('status')->default('active');
             $table->timestamp('completed_at')->nullable();
             $table->timestamps();

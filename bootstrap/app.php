@@ -31,7 +31,6 @@ return Application::configure(basePath: dirname(__DIR__))
             }
             elseif ($e instanceof DatabaseConnectionException) {
             return response()->json(['error'=>true, 'message' => 'Databse connection Error'. $e->getMessage()], 500);
-
             }
             elseif($e instanceof PDOException){
               return response()->json(['error'=>true, 'message' => ' No connection could be made because the target machine actively refused it'], 500);

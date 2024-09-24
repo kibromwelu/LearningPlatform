@@ -13,22 +13,19 @@ class TopicController extends Controller
     public function index()
     {
         //
+        $response = Topic::getAll();
+        return response()->json(['error'=>false, 'data'=>$response]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
+    
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        //
+        $response = Topic::register($request->all());
+        return response()->json(['error'=>false, 'message'=>'Topic created successfully', 'data'=>$response],201);
     }
 
     /**

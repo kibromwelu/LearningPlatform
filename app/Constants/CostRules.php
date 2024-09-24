@@ -1,105 +1,10 @@
 <?php
-
 namespace App\Constants;
 
 class CostRules
 {
-    // public const PACKAGES = [
-    //     'basic' => [
-    //         'monthly' => [
-    //             'ETB' => 100,
-    //             'USD' => 2,
-    //         ],
-    //         'quarterly' => [
-    //             'ETB' => 270, 
-    //             'USD' => 6, 
-    //         ],
-    //         'annually' => [
-    //             'ETB' => 1000, 
-    //             'USD' => 20,
-    //         ],
-    //         ],
-        
-    //     'standard' => [
-    //         'monthly' => [
-    //             'ETB' => 100,
-    //             'USD' => 10,
-    //         ],
-    //         'quarterly' => [
-    //             'ETB' => 270, 
-    //             'USD' => 6, 
-    //         ],
-    //         'annually' => [
-    //             'ETB' => 1000, 
-    //             'USD' => 20,
-    //         ],
-    //     ],
-    //     'premium' => [
-    //         'monthly' => [
-    //             'ETB' => 100,
-    //             'USD' => 100,
-    //         ],
-    //         'quarterly' => [
-    //             'ETB' => 270, 
-    //             'USD' => 6, 
-    //         ],
-    //         'annually' => [
-    //             'ETB' => 1000, 
-    //             'USD' => 20,
-    //         ],
-    //     ],
-    //     'family' => [
-    //         'monthly' => [
-    //             'ETB' => 100,
-    //             'USD' => 100,
-    //             // ['amount' => 100, 'currency' => 'ETB'],
-    //             // ['amount' => 2, 'currency' => 'USD'],
-    //         ],
-    //         'quarterly' => [
-    //             'ETB' => 270, 
-    //             'USD' => 6, 
-    //         ],
-    //         'annually' => [
-    //             'ETB' => 1000, 
-    //             'USD' => 20,
-    //         ],
-    //     ],
-    //     'enterprise' => [
-    //         'monthly' => [
-    //             'ETB' => 100,
-    //             'USD' => 100,
-    //             // ['amount' => 100, 'currency' => 'ETB'],
-    //             // ['amount' => 2, 'currency' => 'USD'],
-    //         ],
-    //         'quarterly' => [
-    //             'ETB' => 270, 
-    //             'USD' => 6, 
-    //         ],
-    //         'annually' => [
-    //             'ETB' => 1000, 
-    //             'USD' => 20,
-    //         ],
-    //     ],
-    //     'freemium' => [
-    //         'monthly' => [
-    //             'ETB' => 100,
-    //             'USD' => 100,
-    //             // ['amount' => 100, 'currency' => 'ETB'],
-    //             // ['amount' => 2, 'currency' => 'USD'],
-    //         ],
-    //         'quarterly' => [
-    //             'ETB' => 270, 
-    //             'USD' => 6, 
-    //         ],
-    //         'annually' => [
-    //             'ETB' => 1000, 
-    //             'USD' => 20,
-    //         ],
-    //     ],
-    // ];
-public const PACKAGES = [
+    public const PACKAGES = [
         'basic' => [
-            
             'max_allowed_learners' => 1,
             'max_courses' => 5,
             'pricing' => [
@@ -117,7 +22,6 @@ public const PACKAGES = [
                 ],
             ],
         ],
-    
         'standard' => [
             'max_allowed_learners' => 1,
             'max_courses' => 10,
@@ -136,10 +40,9 @@ public const PACKAGES = [
                 ],
             ],
         ],
-    
         'premium' => [
             'max_allowed_learners' => 1,
-            'max_courses' => INF,
+            'max_courses' => 100,
             'pricing' => [
                 'monthly' => [
                     'ETB' => 100,
@@ -155,10 +58,9 @@ public const PACKAGES = [
                 ],
             ],
         ],
-    
         'family' => [
-            'max_allowed_learners' => 2,
-            'max_courses' => 2,
+            'max_allowed_learners' => 3,
+            'max_courses' => 5,
             'pricing' => [
                 'monthly' => [
                     'ETB' => 100,
@@ -174,30 +76,83 @@ public const PACKAGES = [
                 ],
             ],
         ],
-    
         'enterprise' => [
-            'max_allowed_learners' => 500,
-            'max_courses' => 10,
-            'pricing' => [
-                'monthly' => [
-                    'ETB' => 100,
-                    'USD' => 100,
+            '1-10' => [
+                'max_allowed_learners' => 10,
+                'max_courses' => 5,
+                'pricing' => [
+                    'monthly' => [
+                        'ETB' => 1000,
+                        'USD' => 10,
+                    ],
+                    'quarterly' => [
+                        'ETB' => 2500,
+                        'USD' => 25,
+                    ],
+                    'annually' => [
+                        'ETB' => 9000,
+                        'USD' => 90,
+                    ],
                 ],
-                'quarterly' => [
-                    'ETB' => 270,
-                    'USD' => 6,
+            ],
+            '11-30' => [
+                'max_allowed_learners' => 30,
+                'max_courses' => 5,
+                'pricing' => [
+                    'monthly' => [
+                        'ETB' => 2000,
+                        'USD' => 20,
+                    ],
+                    'quarterly' => [
+                        'ETB' => 5000,
+                        'USD' => 50,
+                    ],
+                    'annually' => [
+                        'ETB' => 18000,
+                        'USD' => 180,
+                    ],
                 ],
-                'annually' => [
-                    'ETB' => 1000,
-                    'USD' => 20,
+            ],
+            '31-50' => [
+                'max_allowed_learners' => 50,
+                'max_courses' => 5,
+                'pricing' => [
+                    'monthly' => [
+                        'ETB' => 3000,
+                        'USD' => 30,
+                    ],
+                    'quarterly' => [
+                        'ETB' => 7500,
+                        'USD' => 75,
+                    ],
+                    'annually' => [
+                        'ETB' => 25000,
+                        'USD' => 250,
+                    ],
+                ],
+            ],
+            '51+' => [
+                'max_allowed_learners' => 100, // Example upper limit
+                'max_courses' => 5,
+                'pricing' => [
+                    'monthly' => [
+                        'ETB' => 4000,
+                        'USD' => 40,
+                    ],
+                    'quarterly' => [
+                        'ETB' => 10000,
+                        'USD' => 100,
+                    ],
+                    'annually' => [
+                        'ETB' => 35000,
+                        'USD' => 350,
+                    ],
                 ],
             ],
         ],
-    
         'freemium' => [
             'max_allowed_learners' => 1,
             'max_courses' => 2,
-        
             'pricing' => [
                 'monthly' => [
                     'ETB' => 100,
@@ -214,5 +169,4 @@ public const PACKAGES = [
             ],
         ],
     ];
-    
 }

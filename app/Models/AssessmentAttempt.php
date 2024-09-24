@@ -39,6 +39,7 @@ class AssessmentAttempt extends Model
     {
         return $this->hasMany(AnswerLog::class);
     }
+    
     public static function getAll($request){
          // Get all query parameters
          $queryParams = $request->query();

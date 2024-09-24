@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('profiles', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignId('identity_id');
+            $table->foreignUuid('identity_id');
             $table->integer('age')->nullable();
             $table->string('biography')->nullable();
             $table->string('category')->nullable();
@@ -31,6 +31,7 @@ return new class extends Migration
             $table->integer('weight')->nullable();
             $table->string('avatar')->nullable();
             $table->string('cover')->nullable();
+            $table->string('isoCode')->nullable();
             $table->string('purpose')->nullable();
             $table->string('file_number')->nullable()->change();
             $table->string('state')->default('null');

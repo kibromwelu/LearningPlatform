@@ -2,16 +2,19 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Symfony\Component\VarDumper\Cloner\Data;
 
 class Address extends Model
 {
     use HasFactory;
+    use HasUuids;
     protected $fillable = [
         'identity_id',
         'residence_id',
-        'mobile_number',
+        'phone',
         'phone',
         'email',
         'website',
@@ -63,7 +66,6 @@ class Address extends Model
         return self::where('identity_id', $identityId)->first();
     }
     public static function  register($data){
-        // dd($data);
-        return self::create($data);
+        return self::updateOrCreate(['identity_id'=>$data['identity_id']],$data);
     }
 }

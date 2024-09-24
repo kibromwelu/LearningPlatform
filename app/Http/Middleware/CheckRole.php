@@ -30,9 +30,9 @@ class CheckRole
         $user = Auth::user();
         $device = LoggedinDevices::where('id', $deviceId)->first();
         // dd($device);
-        if (!$device || $device->state != 'active') {
-            return response()->json(['error'=>true, 'message' => 'Device is inactive'], 401);
-        }
+        // if (!$device || $device->state != 'active') {
+        //     return response()->json(['error'=>true, 'message' => 'Device is inactive'], 401);
+        // }
         foreach ($roles as $role) {
             if ($user && $user->hasRole($role)) {
                 return $next($request);

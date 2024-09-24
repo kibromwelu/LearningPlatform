@@ -22,9 +22,8 @@ class RegistrationStep3Request extends FormRequest
     public function rules(): array
     {
         return [
-            //
             'birth_date' => 'required|date',
-            'sex' => 'required|string|in:male,female'
+            'sex' => 'required|string|in:Male,Female'
         ];
     }
 }

@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Subscription;
+use App\Http\Requests\InviteLearnerRequest;
 use App\Http\Requests\StoreSubscriptionRequest;
 use App\Http\Requests\UpdateSubscriptionRequest;
 use App\Services\SubscriptionService;
+use Illuminate\Support\Facades\Log;
 // use App\Services\GeolocationService;
 // use GuzzleHttp\Psr7\Message;
 
@@ -36,9 +38,9 @@ class SubscriptionController extends Controller
         return response()->json(['error'=>false, 'message'=>'Subscription created successfully.','item'=>$subscription], 201);
     }
 
-    public function addLearnersToMySubscription(Request $request){
-    //    dd( $request->all());
-        $subscriptionLearner = SubscriptionService::addLearnersToMySubscription($request);
+    public function addLearnersToMySubscription(InviteLearnerRequest $request){
+    //    dd( $request->validated());
+        $subscriptionLearner = SubscriptionService::addLearnersToMySubscription($request->validated());
         return response()->json(['error'=>false, 'message'=>"You have added a learner to your subscription.", 'data'=>$subscriptionLearner],201);
     }
 
@@ -93,5 +95,8 @@ class SubscriptionController extends Controller
     public function removeLearners($subscription_id, Request $request){
         SubscriptionService::removeLearnerFromSubs($subscription_id, $request->learner_id);
         return response()->json(['error'=>false, 'message'=>"You have removed the learner from your package"],202);
+    }
+    public function approveSubscription($subscription_id){
+        dd($subscription_id); 
     }
 }

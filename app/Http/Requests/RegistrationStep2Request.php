@@ -24,7 +24,7 @@ class RegistrationStep2Request extends FormRequest
         return [
             //
             'email' => 'required|email',
-            'mobile_number' => 'required|string',
+            'phone' => 'required|string',
         ];
     }
 }
