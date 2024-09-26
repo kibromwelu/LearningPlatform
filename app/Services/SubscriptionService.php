@@ -20,13 +20,9 @@ class SubscriptionService
         $data['identity_id'] = $user->identity_id;
         if ($package === 'enterprise') {
             $selectedRange = $request->range; 
-            
-            // Validate the selected range
             if (!isset(CostRules::PACKAGES[$package][$selectedRange])) {
                 throw new Exception("Invalid range for the enterprise package.", 400);
             }
-
-            // Validate and retrieve the price based on the selected range, payment mode, and currency
             if (!isset(CostRules::PACKAGES[$package][$selectedRange]['pricing'][$paymentMode][$currencyType])) {
                 throw new Exception("Invalid payment mode or currency for the selected range.", 400);
             }
@@ -36,7 +32,6 @@ class SubscriptionService
             $data['payment'] = CostRules::PACKAGES[$package][$selectedRange]['pricing'][$paymentMode][$currencyType];
 
         } else {
-            // Handle non-enterprise packages
             if (!isset(CostRules::PACKAGES[$package]['pricing'][$paymentMode][$currencyType])) {
                 throw new Exception("Invalid package or payment time range", 400);
             }
@@ -45,7 +40,6 @@ class SubscriptionService
             $data['max_allowed_courses'] = CostRules::PACKAGES[$package]['max_courses'];
             $data['payment'] = CostRules::PACKAGES[$package]['pricing'][$paymentMode][$currencyType];
         }
-        // dd($data);
         return Subscription::register($data);
         
     }

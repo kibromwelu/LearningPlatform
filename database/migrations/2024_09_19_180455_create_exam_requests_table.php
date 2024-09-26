@@ -16,10 +16,12 @@ return new class extends Migration
             $table->foreignUuid('learner_id');
             $table->foreignUuid('course_id');
             $table->foreignUuid('approved_by')->nullable();
+            $table->timestamp('approved_at')->nullable();
+            $table->foreignUuid('authorized_by')->nullable();
+            $table->timestamp('authorized_at')->nullable();
             $table->string('state')->default('new');
             $table->softDeletes();
             $table->timestamps();
-
         });
     }
 

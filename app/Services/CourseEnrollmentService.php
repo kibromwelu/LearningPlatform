@@ -3,22 +3,33 @@ namespace App\Services;
 
 use App\Models\CourseEnrollment;
 use App\Models\Subscription;
+use Illuminate\Support\Facades\DB;
 
 class CourseEnrollmentService 
 {
     public static function registerEnrollment($data){
 
         $permission = self::checkEnrollmentPermission($data['subscription_id']);
-        // dd($data);
+
         if($permission['error']){
             throw new \Exception($permission['message'], 400);
         }
-        $enrollment = CourseEnrollment::registerEnrollment($data);
-        if($enrollment) {
-            $newData['enrolled_courses'] =  $permission['subs']->enrolled_courses+1;
-            Subscription::updateSubscription($newData, $permission['subs']->id );
+        
+        DB::beginTransaction();
+        try {
+             $enrollment = CourseEnrollment::registerEnrollment($data);
+            if($enrollment) {
+                $newData['enrolled_courses'] =  $permission['subs']->enrolled_courses+1;
+                Subscription::updateSubscription($newData, $permission['subs']->id );
+            }
+            DB::commit();
+            return $enrollment;
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw new \Exception('Something went wrong'.$th, 400);
+
         }
-        return $enrollment;
+       
     }
 
     public static function removeEnrollmentFromSubscription($courseEnrollmentId){

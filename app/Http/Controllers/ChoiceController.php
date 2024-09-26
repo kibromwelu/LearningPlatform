@@ -34,10 +34,6 @@ class ChoiceController extends Controller
         $response = Choice::register($request->validated());
         return response()->json(['error'=> false, 'data'=>$response], 200);
     }
-
-    /**
-     * Display the specified resource.
-     */
     public function show(Choice $choice)
     {
         //

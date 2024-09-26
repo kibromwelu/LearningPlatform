@@ -63,13 +63,10 @@ class AuthController extends Controller
     {
         $credentials = $request->only('username', 'password');
         $result = User::login($credentials);
-        
         if (isset($result['error'])) {
             return response()->json($result, 401);
         }
-        // dd($result);
         $logDevice = LoggedinDevices::register($result['user']->id, $request->ip());
-        // dd($logDevice);
         return response()->json(['error'=> false, 'data'=>$result, 'device'=>$logDevice]);
     }
 

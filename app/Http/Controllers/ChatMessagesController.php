@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ChatMessages;
 use App\Http\Requests\StoreChatMessagesRequest;
 use App\Http\Requests\UpdateChatMessagesRequest;
+use App\Models\UserMessage;
 use App\Services\ChatService;
 use Illuminate\Http\Request;
 
@@ -16,7 +17,7 @@ class ChatMessagesController extends Controller
     public function index($friend_id)
     {
         $response = ChatService::getAll($friend_id);
-        return response()->json(['error'=>false, 'message'=>'success', 'data'=>$response],200);
+        return response()->json(['error' => false, 'message' => 'success', 'data' => $response], 200);
     }
 
     /**
@@ -33,18 +34,18 @@ class ChatMessagesController extends Controller
     public function store(StoreChatMessagesRequest $request)
     {
         //
-        $response = ChatService::storeChat($request->all());
-        return response()->json(['error'=> false, 'message'=>'sent', 'data'=>$response ], 201);
+        $response = ChatService::storeChat($request->validated(), $request->friend_id);
+        return response()->json(['error' => false, 'message' => 'sent', 'data' => $response], 201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show($friend_id)
+    public function show($friendId, Request $request)
     {
         //
-        $response = ChatService::getAll($friend_id);
-        return response()->json(['error'=>false, 'message'=>'success', 'data'=>$response],200);
+        $response = UserMessage::getAll($friendId, $request->skip, $request->count);
+        return response()->json(['error' => false, 'message' => 'success', 'data' => $response], 200);
     }
 
     /**
@@ -62,17 +63,14 @@ class ChatMessagesController extends Controller
     {
         //
         $response = ChatService::updateMessage($request->validated(), $message_id);
-        return response()->json(['error'=>false, 'message'=>'Message updated', 'data'=>$response],202);
+        return response()->json(['error' => false, 'message' => 'Message updated', 'data' => $response], 202);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy($message_id,Request $request)
+
+    public function destroy($userMessageId, Request $request)
     {
         //
-        ChatService::deleteMessage($message_id, $request->forWhom);
-        return response()->json(['error'=>false, 'message'=>'Message Deleted'],200);
-
+        ChatService::deleteMessage($userMessageId, $request->forWhom);
+        return response()->json(['error' => false, 'message' => 'Message Deleted'], 200);
     }
 }

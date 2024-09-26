@@ -4,14 +4,14 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreCourseDiscussionRequest extends FormRequest
+class UpdateSignatureRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return true;
+        return false;
     }
 
     /**
@@ -22,11 +22,7 @@ class StoreCourseDiscussionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'parent_id' => 'uuid',
-            'message' => 'required|string',
-            // "learner_id"=>'required|uuid',
-            // 'course_id'=>'uuid',
-            // 'filename'=>'file|max:2048',
+            //
         ];
     }
 }

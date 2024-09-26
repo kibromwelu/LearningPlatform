@@ -22,7 +22,8 @@ class StoreChatMessagesRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'filename'=>'file',
+            'content'=>'string|required'
         ];
     }
 }

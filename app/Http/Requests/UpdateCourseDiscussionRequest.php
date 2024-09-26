@@ -22,8 +22,8 @@ class UpdateCourseDiscussionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'message'=>'string',
-            'filename'=>'file'
+            'message' => 'string',
+            // 'filename'=>'file'
         ];
     }
 }

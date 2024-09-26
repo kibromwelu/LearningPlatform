@@ -14,10 +14,10 @@ class ExamRequestController extends Controller
     public function index()
     {
         $response  = ExamRequest::getAll();
-        return response()->json(['error'=>false, 'data'=>$response], 200);
+        return response()->json(['error' => false, 'data' => $response], 200);
     }
 
-   
+
 
     /**
      * Store a newly created resource in storage.
@@ -26,18 +26,15 @@ class ExamRequestController extends Controller
     {
         //
         $response = ExamRequest::registerExamRequest($request->validated());
-        return response()->json(['error'=>false, 'data'=>$response], 201);
+        return response()->json(['error' => false, 'data' => $response], 201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(ExamRequest $examRequest)
-    {
-        
-    }
+    public function show(ExamRequest $examRequest) {}
 
-    
+
 
     /**
      * Update the specified resource in storage.
@@ -45,21 +42,25 @@ class ExamRequestController extends Controller
     public function update(UpdateExamRequestRequest $request,  $id)
     {
         $response = ExamRequest::updateExamRequest($request->validated(), $id);
-        return response()->json(['error'=>false, 'data'=>$response], 202);
-
+        return response()->json(['error' => false, 'data' => $response], 202);
     }
 
-    public function approveExamRequest($id){
+    public function approveExamRequest($id)
+    {
         $response = ExamRequest::approveRequest($id);
-        return response()->json(['error'=>false, 'data'=>$response], 202);
+        return response()->json(['error' => false, 'data' => $response], 202);
+    }
+    public function authorizeExamRequest($id)
+    {
+        $response = ExamRequest::authorizeExamRequest($id);
+        return response()->json(['error' => false, 'data' => $response], 202);
     }
     /**
      * Remove the specified resource from storage.
      */
     public function destroy($id)
     {
-        $response = ExamRequest::deleteRequest($id);
-        return response()->json(['error'=>false, 'message'=>'Item Deleted'], 200);
-        
+        ExamRequest::deleteRequest($id);
+        return response()->json(['error' => false, 'message' => 'Item Deleted'], 200);
     }
 }

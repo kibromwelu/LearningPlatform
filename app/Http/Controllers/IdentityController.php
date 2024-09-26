@@ -72,7 +72,6 @@ class IdentityController extends Controller
   
     
     public function postStep1(RegistrationStep1Request $request){
-        // dd($request->all());
         $response =  CustomerService::postStep1($request);
         return response()->json(['error'=>false, "message"=>"First step completed", 'data'=>$response], 201);
     }
