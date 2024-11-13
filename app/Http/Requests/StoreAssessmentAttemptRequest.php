@@ -23,9 +23,9 @@ class StoreAssessmentAttemptRequest extends FormRequest
     {
         return [
             //
-            'learner_id'=>'uuid',
-            'course_id'=>'required|uuid',
-            'score'=>'decimal:2',
+            'enrollment_id' => 'uuid',
+            'topic_id' => 'required|uuid',
+            'answers' => 'array',
         ];
     }
 }

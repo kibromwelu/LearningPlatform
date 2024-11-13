@@ -21,6 +21,9 @@ class UpdateCertificateRequestRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [];
+        return [
+            'state' => 'string|in:approve,authorize,clo-reject,ceo-reject',
+            'requestIds' => 'array',
+        ];
     }
 }

@@ -22,7 +22,7 @@ class StoreExamRequestRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'course_id'=>'required|uuid',
+            'enrollment_id' => 'required|uuid',
         ];
     }
 }

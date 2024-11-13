@@ -13,26 +13,16 @@ return new class extends Migration
     {
         Schema::create('certificate_requests', function (Blueprint $table) {
             $table->uuid('id')->primary();
-
-            $table->string('learner_id', 36);
-            $table->string('course_id', 36);
-
-            $table->string('approved_by', 36)->nullable();
-            $table->timestamp('approved_at')->nullable();
-            $table->string('approval_sign_id', 36)->nullable();
-
-            $table->string('authorized_by', 36);
-            $table->timestamp('authorized_at')->nullable();
-            $table->string('authorization_sign_id', 36)->nullable();
+            $table->foreignUuid('enrollment_id');
+            $table->foreignUuid('clo_id')->nullable();
+            $table->timestamp('clo_action_date')->nullable();
+            $table->foreignUuid('clo_sign_id')->nullable();
+            $table->string('clo_action')->nullable();
+            $table->foreignUuid('ceo_id')->nullable();
+            $table->timestamp('ceo_action_date')->nullable();
+            $table->foreignUuid('ceo_sign_id')->nullable();
+            $table->string('ceo_action')->nullable();
             $table->string('state');
-
-            $table->foreign('learner_id')->references('id')->on('identities');
-            $table->foreign('course_id')->references('id')->on('courses');
-            $table->foreign('approved_by')->references('id')->on('identities');
-            $table->foreign('authorized_by')->references('id')->on('identities');
-            $table->foreign('approval_sign_id')->references('id')->on('signatures');
-            $table->foreign('authorization_sign_id')->references('id')->on('signatures');
-
             $table->softDeletes();
             $table->timestamps();
         });

@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
 use App\Models\LearnerProgress;
 use App\Http\Requests\StoreLearnerProgressRequest;
@@ -16,16 +17,10 @@ class LearnerProgressController extends Controller
     {
         //
         $response = LearnerProgress::getAll();
-        return response()->json(['error'=>false, 'message'=>'success', 'data'=>$response],201);
+        return response()->json(['error' => false, 'message' => 'success', 'data' => $response], 201);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
+
 
     /**
      * Store a newly created resource in storage.
@@ -34,7 +29,7 @@ class LearnerProgressController extends Controller
     {
         //
         $response = LearnerProgress::registerProgress($request->except('state'));
-        return response()->json(['error'=>false, 'message'=>'Progress recorded successfuly', 'data'=>$response], 201);
+        return response()->json(['error' => false, 'message' => 'Progress recorded successfuly', 'data' => $response], 201);
     }
 
     /**
@@ -44,10 +39,10 @@ class LearnerProgressController extends Controller
     {
         //
         $response = LearnerProgress::getOne($id);
-        return response()->json(['error'=>true, 'message'=>'success', 'data'=>$response]);
+        return response()->json(['error' => true, 'message' => 'success', 'data' => $response]);
     }
 
-    
+
 
     /**
      * Update the specified resource in storage.
@@ -66,6 +61,6 @@ class LearnerProgressController extends Controller
     {
         //
         $response = LearnerProgress::deleteProgress($id);
-        return response()->json(['error'=>false, "message"=>$response]);
+        return response()->json(['error' => false, "message" => $response]);
     }
 }

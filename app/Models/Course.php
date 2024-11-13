@@ -10,10 +10,11 @@ class Course extends Model
 {
     use HasFactory;
     use  HasUuids;
-    protected $fillable=[
-       
+    protected $fillable = [
+
         'course_name',
-        'category'
+        'category',
+        'state'
     ];
     protected $hidden = ['created_at', 'updated_at', 'deleted_at'];
     public function enrollments()
@@ -32,6 +33,10 @@ class Course extends Model
     {
         return $this->hasMany(ExamRequest::class);
     }
+    public function ratings()
+    {
+        return $this->morphMany(Rating::class, 'rated');
+    }
     public function learnerprogress()
     {
         return $this->hasMany(LearnerProgress::class);
@@ -42,9 +47,27 @@ class Course extends Model
     }
     public function discussions()
     {
-        return $this->hasMany(CourseDiscussion::class); 
+        return $this->hasMany(CourseDiscussion::class);
     }
-    public static function registerCourse($data){
+
+    public static function registerCourse($data)
+    {
         return self::create($data);
+    }
+
+    public static function updateCourse($data, $courseId)
+    {
+
+        $course = self::find($courseId);
+        return $course->update($data);
+    }
+
+    public static function getAll()
+    {
+        $courses = self::get();
+        foreach ($courses as &$course) {
+            $course->rating = Rating::getRating($course->id) ?? 0;
+        }
+        return $courses;
     }
 }

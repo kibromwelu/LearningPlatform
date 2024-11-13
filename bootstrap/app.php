@@ -20,9 +20,8 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->render(function (Throwable $e, Request $request) {
-            // Handle database connection errors
-            // dd(get_class($e));
-            // dd($e);
+
+            dd($e->getMessage());
             // dd($e->getMessage());
 
             if ($e instanceof QueryException) {

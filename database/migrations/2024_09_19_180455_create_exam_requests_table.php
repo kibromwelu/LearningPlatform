@@ -13,11 +13,13 @@ return new class extends Migration
     {
         Schema::create('exam_requests', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('learner_id');
-            $table->foreignUuid('course_id');
-            $table->foreignUuid('approved_by')->nullable();
-            $table->timestamp('approved_at')->nullable();
-            $table->foreignUuid('authorized_by')->nullable();
+            $table->foreignUuid('enrollment_id');
+            $table->foreignUuid('clo_id')->nullable();
+            $table->string('clo_action')->nullable();
+            $table->timestamp('clo_action_date')->nullable();
+            $table->foreignUuid('ceo_id')->nullable();
+            $table->string('ceo_action')->nullable();
+            $table->timestamp('ceo_action_date')->nullable();
             $table->timestamp('authorized_at')->nullable();
             $table->string('state')->default('new');
             $table->softDeletes();

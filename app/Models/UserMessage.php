@@ -51,7 +51,7 @@ class UserMessage extends Model
     {
         $messages = UserMessage::where('identity_id', Auth()->user()->identity_id)
             ->where('friend_id', $friendId)
-            ->orderBy('created_at', 'desc')
+            ->orderBy('created_at', 'asc')
             ->skip($skip ?? 0)
             ->take($count ?? 10)
             ->with('message')

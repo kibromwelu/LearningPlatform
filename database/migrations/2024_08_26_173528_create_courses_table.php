@@ -15,6 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('course_name');
             $table->string('category')->nullable();
+            $table->string('state')->default('new');
             $table->timestamps();
         });
     }

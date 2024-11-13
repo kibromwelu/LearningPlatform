@@ -23,10 +23,9 @@ class StoreAnswerLogRequest extends FormRequest
     {
         return [
             //
-            "assessment_attempt_id"=>"required|uuid",
-            "question_id"=>'required',
-            "learner_answer"=>"required|string",
-            'is_correct'=>'boolean'
+            "assessment_attempt_id" => "required|uuid",
+            "question_id" => 'required',
+            "learner_answer" => "required|string",
         ];
     }
 }

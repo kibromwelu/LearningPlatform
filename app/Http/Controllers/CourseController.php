@@ -12,7 +12,8 @@ class CourseController extends Controller
      */
     public function index()
     {
-        return Course::get();
+        $response = Course::getAll();
+        return response()->json(['error' => false, 'message' => 'success', 'data' => $response]);
     }
 
 
@@ -26,7 +27,7 @@ class CourseController extends Controller
 
         $response = Course::registerCourse($request->all());
 
-        return response()->json(['error'=>false, 'message'=>'Created successfully', 'data'=>$response],201);
+        return response()->json(['error' => false, 'message' => 'Created successfully', 'data' => $response], 201);
     }
 
     /**

@@ -8,11 +8,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use App\Models\LoggedinDevices;
-use App\Services\GeoLocationservice;
-
-
 use App\Http\Requests\UserRequest;
 use App\Http\Controllers\Controller;
+use App\Models\Address;
+use App\Models\PasswordResetLink;
+use App\Services\FileService;
+use Exception;
+use Illuminate\Support\Facades\Password;
 
 class AuthController extends Controller
 {
@@ -33,32 +35,61 @@ class AuthController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
 
-     public function index(Request $request){
+    public function forgotPassword(Request $request)
+    {
+        return User::forgotPassword($request);
+    }
+    public function sendResetPasswordForm(Request $request, $token)
+    {
+        $tokenData = PasswordResetLink::where('token', $token)->first();
+        if (!$tokenData || $tokenData->expires_at < now()) {
+            throw new Exception('invalid link');
+        }
+        return view('PasswordReset', ['token' => $token]);
+    }
+
+    public function resetApprovedResetRequest(Request $request, $identityId)
+    {
+        $response = User::updateUser($request->all(), $identityId);
+        return response()->json(['data' => $response]);
+    }
+    public function resetPassword(Request $request, $token)
+    {
+        PasswordResetLink::resetPassword($request->all(), $token);
+        $url = url('/api/auth/login');
+        return view('SuccessMessage', ['link' => $url]);
+    }
+    public function index(Request $request)
+    {
         $users = User::getUsers($request->numberOfItems);
         return response()->json($users, 200);
-     }
-     public function update(Request $request,$id){
+    }
+    public function update(Request $request, $id)
+    {
         $user = User::updateUser($request->all(), $id);
-        return response()->json($user,203);
-     }
+        return response()->json($user, 203);
+    }
     public function store(UserRequest $request)
     {
         try {
-            $input = $request->only(['name', 'email', 'password','role']);
+            $input = $request->only(['name', 'email', 'password', 'role']);
             $user = User::registerUser($input);
-            return response()->json(['error'=>false,'message' => "user created successfuly", "data" => $user], 201);
+            return response()->json(['error' => false, 'message' => "user created successfuly", "data" => $user], 201);
         } catch (\Throwable $th) {
-            return response()->json(['error'=>true,'message'=>'error found'. $th->getMessage()], 500);
+            return response()->json(['error' => true, 'message' => 'error found' . $th->getMessage()], 500);
         }
     }
 
     public function destroy($id)
     {
         // dd($id);
-       $user = User::deleteUser($id);
+        $user = User::deleteUser($id);
         return response()->json($user, 202);
     }
-
+    public function getFile($filename)
+    {
+        return FileService::getFile('/signatures/', $filename);
+    }
     public function login(Request $request)
     {
         $credentials = $request->only('username', 'password');
@@ -67,7 +98,7 @@ class AuthController extends Controller
             return response()->json($result, 401);
         }
         $logDevice = LoggedinDevices::register($result['user']->id, $request->ip());
-        return response()->json(['error'=> false, 'data'=>$result, 'device'=>$logDevice]);
+        return response()->json(['error' => false, 'data' => $result, 'device' => $logDevice]);
     }
 
     /**
@@ -89,15 +120,16 @@ class AuthController extends Controller
     public function logout($loggedInDevice)
     {
         // dd($loggedInDevice);
-        auth()->logout(); 
+        auth()->logout();
         Loggedindevices::logoutDevice($loggedInDevice);
         return response()->json(['message' => 'Successfully logged out']);
     }
 
-    public function logoutFromAllOtherDevices(Request $request, $loggedInDevice){
+    public function logoutFromAllOtherDevices(Request $request, $loggedInDevice)
+    {
         $response = Loggedindevices::logoutFromAllOtherDevices($request->user_id, $loggedInDevice);
 
-        return response()->json(['error'=>false, 'message'=> 'Logged out from all other devices successfully'],200);
+        return response()->json(['error' => false, 'message' => 'Logged out from all other devices successfully'], 200);
     }
 
     /**
@@ -128,5 +160,52 @@ class AuthController extends Controller
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60
         ]);
+    }
+
+    public function sendResetLinkEmail(Request $request)
+    {
+
+        $address = Address::where('email', $request->email)->first();
+        // dd($address);
+        if (!$address) {
+            return back()->withErrors(['email' => 'We could not find an account with that email address.']);
+        }
+
+        $user = User::where('identity_id', $address->identity_id);
+
+        if (!$user) {
+            dd('fusfjd');
+            return back()->withErrors(['email' => 'We could not find a user associated with that email address.']);
+        }
+
+        $response = Password::sendResetLink($address);
+        dd($response);
+        if ($response === Password::RESET_LINK_SENT) {
+            return back()->with('status', 'We have emailed you a password reset link.');
+        }
+
+        return back()->withErrors(['email' => 'We could not send the password reset link.']);
+    }
+
+    public function reset(Request $request)
+    {
+        $this->validate($request, [
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => 'required|confirmed',
+        ]);
+
+        $credentials = $request->only('email', 'password', 'password_confirmation', 'token');
+
+        $response = Password::reset($credentials, function ($user, $password) {
+            $user->password = Hash::make($password);
+            $user->save();
+        });
+
+        if ($response === Password::PASSWORD_RESET) {
+            return redirect('/login')->with('status', 'Password reset successful.');
+        }
+
+        return back()->withErrors(['email' => 'Invalid token or email.']);
     }
 }

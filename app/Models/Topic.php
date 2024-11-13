@@ -27,15 +27,22 @@ class Topic extends Model
     {
         return $this->belongsTo(Module::class);
     }
-   
-    public static function register($data){
+    public function question()
+    {
+        return $this->hasMany(Question::class);
+    }
+
+    public static function register($data)
+    {
         return self::create($data);
     }
 
-    Public static function getAll(){
+    public static function getAll()
+    {
         return self::get();
     }
-    public static function getOne($id){
+    public static function getOne($id)
+    {
         return self::find($id);
     }
 }

@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('assessment_attempts', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('learner_id');
-            $table->foreignUuid('course_id');
-            $table->foreignUuid('topic_id');
+            $table->foreignUuid('enrollment_id');
+            $table->foreignUuid('topic_id')->nullable();
+            $table->string('type')->default('quiz');
             $table->decimal('score')->default(0);
             $table->string('state')->default('pending');
             $table->softDeletes();

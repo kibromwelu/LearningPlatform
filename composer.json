@@ -6,6 +6,8 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "barryvdh/laravel-dompdf": "^3.0",
+        "barryvdh/laravel-snappy": "^1.0",
         "geoip2/geoip2": "^3.0",
         "jenssegers/agent": "^2.6",
         "laravel/framework": "^11.9",

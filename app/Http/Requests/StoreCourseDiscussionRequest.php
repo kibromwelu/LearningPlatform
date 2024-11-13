@@ -24,9 +24,7 @@ class StoreCourseDiscussionRequest extends FormRequest
         return [
             'parent_id' => 'uuid',
             'message' => 'required|string',
-            // "learner_id"=>'required|uuid',
-            // 'course_id'=>'uuid',
-            // 'filename'=>'file|max:2048',
+            'filenames' => 'array',
         ];
     }
 }

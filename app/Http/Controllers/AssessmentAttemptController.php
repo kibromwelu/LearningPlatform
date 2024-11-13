@@ -2,6 +2,7 @@
 
 
 namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -19,19 +20,27 @@ class AssessmentAttemptController extends Controller
     {
         //
         $response = AssessmentAttempt::getAll($request);
-        return response()->json(['error'=> false, 'message'=>'success', 'data'=>$response],200);
+        return response()->json(['error' => false, 'message' => 'success', 'data' => $response], 200);
     }
-
+    public function getFinalExamQuestions($courseId)
+    {
+        $res = AssessmentAttemptService::getFinalExamQuestions($courseId);
+        return response()->json(['error' => false, 'message' => "success", 'data' => $res], 200);
+    }
     /**
      * Store a newly created resource in storage.
      */
     public function store(StoreAssessmentAttemptRequest $request)
     {
-       
-        $res = AssessmentAttemptService::attempt($request, $request->enrollment_id);
-        return response()->json(['error'=>false, 'message'=>"Attempt recorded", 'data'=>$res], 201);
-    }
 
+        $res = AssessmentAttemptService::attempt($request, $request->enrollment_id);
+        return response()->json(['error' => false, 'message' => "Attempt recorded", 'data' => $res], 201);
+    }
+    public function storeFinalExam(Request $request)
+    {
+        $res = AssessmentAttemptService::storeFinalExam($request->all());
+        return response()->json(['error' => false, 'message' => $res], 202);
+    }
     /**
      * Display the specified resource.
      */
@@ -39,7 +48,7 @@ class AssessmentAttemptController extends Controller
     {
         //
         $response = AssessmentAttempt::getOne($id);
-        return response()->json(['error'=>true, 'message'=>'success', "data"=>$response],200);
+        return response()->json(['error' => true, 'message' => 'success', "data" => $response], 200);
     }
 
     /**
@@ -58,6 +67,6 @@ class AssessmentAttemptController extends Controller
     {
         //
         $response = AssessmentAttempt::deleteAttempt($id);
-        return response()->json(['error'=>false, 'message'=>$response], 202);
+        return response()->json(['error' => false, 'message' => $response], 202);
     }
 }

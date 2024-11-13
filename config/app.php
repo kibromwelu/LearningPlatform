@@ -34,7 +34,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | This value determines the "environment" your application is currently
-    | running in. This may determine how you prefer to configure various
+    | running in. This may determine how you prefer to configure vcrious
     | services the application utilizes. Set this in your ".env" file.
     |
     */
@@ -107,7 +107,7 @@ return [
     | are secure. You should do this prior to deploying the application.
     |
     */
-  
+
 
 
     'cipher' => 'AES-256-CBC',

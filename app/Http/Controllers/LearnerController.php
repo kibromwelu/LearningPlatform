@@ -15,22 +15,10 @@ class LearnerController extends Controller
         return Learner::get();
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        // dd($request->all());
         $learner = Learner::registerLearner($request->all());
-        return response()->json(['error'=>false, 'message'=> 'Created successfully', 'data'=>$learner],201);
+        return response()->json(['error' => false, 'message' => 'Created successfully', 'data' => $learner], 201);
     }
 
     /**

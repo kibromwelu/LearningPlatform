@@ -17,8 +17,7 @@ return new class extends Migration
     {
         Schema::create('learner_progress', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('learner_id');
-            $table->foreignUuid('course_id');      // course_enrollment_id      
+            $table->foreignUuid('enrollment_id');     // course_enrollment_id      
             $table->foreignUuid('topic_id');
             $table->string('state')->default('in_progress');
             $table->date('started_at')->default(Carbon::now());

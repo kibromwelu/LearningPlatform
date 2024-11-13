@@ -12,9 +12,9 @@ class CertificateRequestController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index($course_id, Request $request)
+    public function index(Request $request)
     {
-        $response = CertificateRequest::getAll($course_id, $request->state);
+        $response = CertificateRequest::getAll($request->state);
         return response()->json(['error' => false, 'message' => 'success', 'data' => $response], 200);
     }
 
@@ -23,7 +23,7 @@ class CertificateRequestController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreCertificateRequestRequest $request, $courseId)
+    public function store(StoreCertificateRequestRequest $request)
     {
         //
         $response = CertificateRequest::register($request->validated());
@@ -31,7 +31,7 @@ class CertificateRequestController extends Controller
     }
 
 
-    public function show($course_id, $id)
+    public function show($id)
     {
         //
         $response = CertificateRequest::getOne($id);
@@ -39,18 +39,22 @@ class CertificateRequestController extends Controller
     }
 
 
-
+    public function undoReject(Request $request)
+    {
+        $response =  CertificateRequest::undoReject($request->requestIds);
+        return response()->json(['error' => false, 'message' => 'success', 'data' => $response], 200);
+    }
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateCertificateRequestRequest $request, CertificateRequest $certificateRequest, $course_id, $id)
+    public function update(UpdateCertificateRequestRequest $request)
     {
         //
-        $response = CertificateRequest::updateRequest($request->validated(), $course_id, $id);
+        $response = CertificateRequest::updateRequest($request->validated());
         return response()->json(['error' => false, 'message' => 'success', 'data' => $response], 200);
     }
 
-    public function destroy($course_id, $id)
+    public function destroy($id)
     {
         $response = CertificateRequest::deleteRequest($id);
         return response()->json(['error' => false, 'message' => 'success', 'data' => $response], 200);
@@ -67,14 +71,20 @@ class CertificateRequestController extends Controller
         $response = CertificateRequest::rejectRequest($request->requestIds);
         return response()->json(['error' => false, 'message' => 'success', 'data' => $response], 200);
     }
+    public static function rejectApprovedRequest(Request $request)
+    {
+        // dd($request->requestIds);
+        $response = CertificateRequest::rejectApprovedRequest($request->requestIds);
+        return response()->json(['error' => false, 'message' => 'success', 'data' => $response], 200);
+    }
     public static function authorizeRequest(Request $requestIds)
     {
         $response = CertificateRequest::authorizeRequest($requestIds);
-        return response()->json(['error' => false, 'message' => 'success', 'data' => $response], 201);
+        return response()->json(['error' => false, 'message' => 'success', 'data' => $response], 200);
     }
     public static function groupRequest(Request $request)
     {
         $response = CertificateRequest::groupRequests($request->requests);
-        return response()->json(['error' => false, 'message' => 'success', 'data' => $response], 201);
+        return response()->json(['error' => false, 'message' => 'success', 'data' => $response], 200);
     }
 }

@@ -23,13 +23,20 @@ class CourseEnrollment extends Model
     protected $hidden = ['created_at', 'updated_at', 'deleted_at'];
     public function course()
     {
-        return $this->belongsTo(Course::class); //->select(['']);
+        return $this->belongsTo(Course::class, 'course_id'); //->select(['']);
+    }
+    public function assessment()
+    {
+        return $this->hasMany(AssessmentAttempt::class);
     }
     public function subscription()
     {
         return $this->belongsTo(Subscription::class); //->select(['']);
     }
-
+    public function certificate()
+    {
+        return $this->belongsTo(CertificateRequest::class);
+    }
     public function learner()
     {
         return $this->belongsTo(Learner::class);

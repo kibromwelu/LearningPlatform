@@ -22,8 +22,8 @@ class UpdateExamRequestRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'state'=>'string|in:new,approved,rejected',
-            'approved_by'=>'uuid'
+            'state' => 'string|in:new,approve,clo-reject,ceo-reject,authorize',
+            'requestIds' => 'array'
         ];
     }
 }

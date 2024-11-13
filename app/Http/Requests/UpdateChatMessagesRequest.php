@@ -22,8 +22,8 @@ class UpdateChatMessagesRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
-            'content'=>'string',
+            'filename' => 'file|max:2048',
+            'content' => 'string',
         ];
     }
 }

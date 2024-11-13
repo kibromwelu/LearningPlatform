@@ -16,6 +16,8 @@ return new class extends Migration
             $table->foreignUuid('learner_id');
             $table->foreignUuid('subscription_id');
             $table->foreignUuid('course_id');
+            // $table->decimal('result');
+            // $table->integer('total_topics');
             $table->integer('completed_topics')->default(0);
             $table->string('state')->default('pending'); // store state values at constants
             $table->softDeletes();

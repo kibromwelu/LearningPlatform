@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Signature;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class CertificateRequest extends Model
 {
@@ -15,14 +17,15 @@ class CertificateRequest extends Model
     use HasUuids;
     use SoftDeletes;
     protected $fillable = [
-        'learner_id',
-        'course_id',
-        'approved_by',
-        'approved_at',
-        'approval_sign_id',
-        'authorized_by',
-        'authorized_at',
-        'authorization_sign_id',
+        'enrollment_id',
+        'clo_id',
+        'clo_action',
+        'clo_action_date',
+        'clo_sign_id',
+        'ceo_id',
+        'ceo_action',
+        'ceo_action_date',
+        'ceo_sign_id',
         'state'
     ];
 
@@ -30,15 +33,15 @@ class CertificateRequest extends Model
         'created_at',
         'updated_at',
         'deleted_at',
-        'approved_at',
-        'authorized_at',
+        'clo_action_date',
+        'ceo_action_date',
 
 
     ];
 
-    public function course()
+    public function enrollment()
     {
-        return $this->belongsTo(Course::class);
+        return $this->belongsTo(CourseEnrollment::class);
     }
     public function learner()
     {
@@ -46,47 +49,107 @@ class CertificateRequest extends Model
     }
     public function approvedBy()
     {
-        return $this->belongsTo(Identity::class, "approved_by")->select('id', 'first_name', 'last_name');
+        return $this->belongsTo(Identity::class, "clo_id")->select('id', 'first_name', 'last_name');
     }
     public function authorizedBy()
     {
-        return $this->belongsTo(Identity::class, "authorized_by")->select('id', 'first_name', 'last_name');
+        return $this->belongsTo(Identity::class, "ceo_id")->select('id', 'first_name', 'last_name');
     }
 
     public function approvalSignature()
     {
-        return $this->belongsTo(Signature::class, 'approval_sign_id');
+        return $this->belongsTo(Signature::class, 'clo_sign_id');
     }
     public function authSignature()
     {
-        return $this->belongsTo(Signature::class, 'approval_sign_id');
+        return $this->belongsTo(Signature::class, 'ceo_sign_id');
     }
-    public static function getAll($courseId, $state = 'new')
+    public static function getAll($state = null)
     {
         $state = request()->query('state');  // Get 'state' from query parameters
         $query = self::query();
         if ($state) {
             $query->where('state', $state);
         }
-        $query->with('course', 'learner', 'approvedBy', 'authorizedBy', 'authSignature', 'approvalSignature');
-        return $query->get();
+
+        $query->with('enrollment.course', 'enrollment.learner.identity', 'approvedBy', 'authorizedBy', 'authSignature', 'approvalSignature');
+        $requests = $query->get();
+
+        foreach ($requests as $request) {
+            $request->CLO_Sign = $request->approvalSignature ? url('/api/auth/sign/') . '/' . $request->approvalSignature->filename : null;
+            $request->score = self::calculateLearnerResult($request->enrollment_id, $request->enrollment->course_id);
+            $request->CEO_Sign = $request->authSignature ?  url('/api/auth/sign/') . '/' . $request->authSignature->filename : null;
+        }
+        return $requests;
+    }
+    static function calculateLearnerResult($enrollmentId, $courseId)
+    {
+        //
+        $totalQuestionsToAsk = Topic::whereHas('module', function ($query) use ($courseId) {
+            $query->where('course_id', $courseId);
+        })
+            ->sum('number_of_questions_to_ask');
+        //get total quiz score
+        $quizScores = AssessmentAttempt::where('enrollment_id', $enrollmentId)
+            ->where('type', 'quiz')
+            ->whereHas('topic.module', function ($query) use ($courseId) {
+                $query->where(
+                    'course_id',
+                    $courseId
+                );
+            })
+            ->select('topic_id', DB::raw('MAX(score) as max_score'))
+            ->groupBy('topic_id')
+            ->pluck('max_score');
+        $totalQuizScore = $quizScores->sum();
+
+        // calculate quiz result out of 60
+        $quizScore = round(($totalQuizScore / $totalQuestionsToAsk) * 60, 2);
+        //fetch max final exam result
+        $maxFinalExamScore = AssessmentAttempt::where('enrollment_id', $enrollmentId)
+            ->where('type', 'final')
+            ->max('score');
+
+        $totalScore = $quizScore + ($maxFinalExamScore ?? 0);
+
+        return $totalScore;
     }
 
     public static function getOne($iid)
     {
-        return self::with('course', 'learner')->find($iid);
+        $request = self::with('enrollment.course', 'enrollment.learner', 'approvedBy', 'authorizedBy', 'authSignature', 'approvalSignature')->findOrFail($iid);
+        $request->approvalSign = $request->approvalSignature ? url('/api/auth/sign/') . '/' . $request->approvalSignature->filename : null;
+        return $request;
     }
     public static function register($data)
     {
-        $data['learner_id'] = Auth()->user()->identity_id;
+        // $data['learner_id'] = Auth()->user()->identity_id;
+        // dd($data);
         $request = self::create($data);
-        return self::getOne($request->id);
+        return $request;
     }
-    public static function updateRequest($data, $iid)
+
+    public static function updateRequest($data)
     {
-        $examRequest = self::find($iid);
-        $examRequest->update($data);
-        return self::getOne($examRequest->id);
+
+        $user = Auth()->user();
+        $time = Carbon::now();
+        $sign = Signature::where('identity_id', $user->identity_id)->where('state', 'active')->first();
+
+        Log::info($data['requestIds']);
+        $examRequests = self::whereIn('id', $data['requestIds'])->get();
+        foreach ($examRequests as $request) {
+            if ($data['state'] == 'approve') {
+                $request->update(['state' => 'approved', 'clo_id' => $user->identity_id, 'clo_action' => 'approve', 'clo_action_date' => $time, 'clo_sign_id' => $sign->id]);
+            } elseif ($data['state'] == 'authorize') {
+                $request->update(['state' => 'authorized', 'ceo_id' => $user->identity_id, 'ceo_action' => 'authorize', 'ceo_action_date' => $time, 'ceo_sign_id' => $sign->id]);
+            } elseif ($data['state'] == 'ceo-reject') {
+                $request->update(['state' => 'ceo-rejected', 'ceo_id' => $user->identity_id, 'ceo_action' => 'reject', 'ceo_action_date' => $time, 'ceo_sign_id' => $sign->id]);
+            } elseif ($data['state'] == 'clo-reject') {
+                $request->update(['state' => 'clo-rejected', 'clo_id' => $user->identity_id, 'clo_action' => 'reject', 'clo_action_date' => $time, 'clo_sign_id' => $sign->id]);
+            }
+        }
+        return $examRequests;
     }
     public static function deleteRequest($iid)
     {
@@ -100,9 +163,9 @@ class CertificateRequest extends Model
         $sign = Signature::where('identity_id', $userId)->first();
         $createdRequests = [];
         foreach ($certificateRequests as $request) {
-            $request['approved_at'] = $time;
-            $request['approved_by'] = $userId;
-            $request['approval_sign'] = $sign->id;
+            $request['clo_action_date'] = $time;
+            $request['clo_id'] = $userId;
+            $request['cli_sign_id'] = $sign->id;
             $request['state'] = 'approved';
             $req =  self::create($request);
             array_push($createdRequests, $req);
@@ -113,11 +176,28 @@ class CertificateRequest extends Model
     {
         $time = Carbon::now();
         $userId = Auth()->user()->identity_id;
-        $data['learner_id'] = $userId;
-        $sign = Signature::where('identity_id', $userId)->first();
+        // $data['learner_id'] = $userId;
+        $sign = Signature::where('identity_id', $userId)->where('state', 'active')->first();
         $requests = self::whereIn('id', $iids)->get();
+
         foreach ($requests as $request) {
-            $request->update(['state' => 'approved', 'approved_at' => $time, 'approved_by' => $userId, 'approval_sign_id' => $sign->id]);
+            $request->update(['state' => 'approved', 'clo_action_date' => $time, 'clo_id' => $userId, 'clo_sign_id' => $sign->id, 'clo_action' => 'approve']);
+        }
+        return $requests;
+    }
+    public static function undoReject($iids)
+    {
+        $time = Carbon::now();
+        $userId = Auth()->user()->identity_id;
+        $sign = Signature::where('identity_id', $userId)->where('state', 'active')->first();
+        $requests = self::whereIn('id', $iids)->get();
+
+        foreach ($requests as $request) {
+            $state = 'new';
+            if ($request->clo_id) {
+                $state = 'approved';
+            }
+            $request->update(['state' => $state, 'clo_action_date' => $time, 'clo_id' => $userId, 'clo_sign_id' => $sign->id, 'clo_action' => 'approve']);
         }
         return $requests;
     }
@@ -129,7 +209,19 @@ class CertificateRequest extends Model
         $sign = Signature::where('identity_id', $userId)->first();
         $requests = self::whereIn('id', $iids)->get();
         foreach ($requests as $request) {
-            $request->update(['state' => 'rejected', 'approved_at' => $time, 'approved_by' => $userId, 'approval_sign_id' => $sign->id]);
+            $request->update(['state' => 'CLO-rejected', 'clo_action_date' => $time, 'clo_id' => $userId, 'clo_sign_id' => $sign->id]);
+        }
+        return $requests;
+    }
+    public static function rejectApprovedRequest($iids)
+    {
+        $time = Carbon::now();
+        $userId = Auth()->user()->identity_id;
+        $data['learner_id'] = $userId;
+        $sign = Signature::where('identity_id', $userId)->first();
+        $requests = self::whereIn('id', $iids)->get();
+        foreach ($requests as $request) {
+            $request->update(['state' => 'CEO-rejected', 'ceo_action_date' => $time, 'ceo_id' => $userId, 'ceo_sign_id' => $sign->id]);
         }
         return $requests;
     }
@@ -137,12 +229,12 @@ class CertificateRequest extends Model
     {
         $time = Carbon::now();
         $userId = Auth()->user()->identity_id;
-        $sign = Signature::where('identity_id', $userId)->first();
+        $sign = Signature::where('identity_id', $userId)->where('state', 'active')->first();
         $authorizedRequests = [];
         $requests = self::whereIn('id', $iids)->get();
         foreach ($requests as $request) {
             if ($request->state == 'approved') {
-                $request->update(['state' => 'authorized', 'authorized_at' => $time, 'authorized_by' => $userId,  'authorization_sign_id' => $sign->id]);
+                $request->update(['state' => 'authorized', 'ceo_action_date' => $time, 'ceo_id' => $userId,  'ceo_sign_id' => $sign->id, 'ceo_action' => 'authorize']);
                 array_push($authorizedRequests, $request);
             }
         }

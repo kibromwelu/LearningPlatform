@@ -1,39 +1,64 @@
 <?php
 
+use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\IdentityController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AddressController;
 // use App\Http\Controllers\CredentialController;
-use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\LearnerController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CourseEnrollmentController;
 use App\Http\Controllers\LearnerProgressController;
+
+use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\AssessmentAttemptController;
 use App\Http\Controllers\AnswerLogController;
 use App\Http\Controllers\CertificateRequestController;
 use App\Http\Controllers\ChatMessagesController;
-use App\Http\Controllers\ChoiceController;
 use App\Http\Controllers\CourseDiscussionController;
 use App\Http\Controllers\ExamRequestController;
+use App\Http\Controllers\SignatureController;
+use App\Http\Controllers\ChoiceController;
+use App\Http\Controllers\CourseCreatorRequestController;
+use App\Http\Controllers\CVTemplateController;
+use App\Http\Controllers\LetterController;
 use App\Http\Controllers\LoggedinDevicesController;
 use App\Http\Controllers\ModuleController;
+use App\Http\Controllers\PasswordResetRequestController;
+use App\Http\Controllers\PollChoiceController;
+use App\Http\Controllers\PollController;
+use App\Http\Controllers\PublishRequestController;
 use App\Http\Controllers\QuestionController;
-use App\Http\Controllers\SignatureController;
+use App\Http\Controllers\RatingController;
+use App\Http\Controllers\RefundRequestController;
 use App\Http\Controllers\TopicController;
-use App\Models\CertificateRequest;
-// use App\Models\Subscription;
+use App\Models\PublishRequest;
+use Illuminate\Support\Facades\URL;
+
 use Illuminate\Support\Facades\Route;
-// use App\Http\Middleware\CheckRole;
+// use Mockery\Generator\StringManipulation\Pass\Pass;
 
 Route::prefix('auth')->group(function () {
+    Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
+
+
+
+    Route::post('/secure-link', function () {
+        $url = URL::temporarySignedRoute('secure.route', now()->addMinutes(1), ['user' => 1]);
+        return $url;
+    });
+    Route::get('reset-password/{token}', [AuthController::class, 'sendResetPasswordForm'])->name('secure.route');
+    Route::post('reset-password/{token}', [AuthController::class, 'resetPassword']);
+    Route::apiResource('cv', CVTemplateController::class);
+    Route::get('/cv-file/{filename}', [CVTemplateController::class, 'getTemplateFile']);
+
+
     Route::apiResource('/signatures', SignatureController::class);
     Route::get('/my-devices/{id}', [LoggedinDevicesController::class, 'getMyDevices']);
     Route::get('/profile-pic/{filename}', [ProfileController::class, 'getProfilePic']);
     Route::get('/post-file/{filename}', [CourseDiscussionController::class, 'getPostFile']);
-    // Route::post('/register/step/{step}/{id}', [IdentityController::class, 'postStep1']);
     Route::post('/register/step1', [IdentityController::class, 'postStep1']);
     Route::post('/register/step2/{id}', [IdentityController::class, 'postStep2']);
     Route::post('/register/step3/{id}', [IdentityController::class, 'postStep3']);
@@ -58,6 +83,16 @@ Route::prefix('auth')->group(function () {
     Route::apiResource('ans-logs', AnswerLogController::class);
 });
 Route::prefix('auth')->middleware(['jwt.auth', 'role:admin,user'])->group(function () {
+    Route::put('reset-password-request', [PasswordResetRequestController::class, 'update']);
+    Route::post('reset-authorized-requests', [PasswordResetRequestController::class, 'resetApprovedRequests']);
+    Route::apiResource('/reset-password-request', PasswordResetRequestController::class);
+
+    Route::apiResource('create-course', CourseCreatorRequestController::class);
+
+    Route::put('refund-request/change-state', [RefundRequestController::class, 'update']);
+    Route::apiResource('refund-request', RefundRequestController::class);
+    Route::put('/change-creator-state', [CourseCreatorRequestController::class, 'changeState']);
+    Route::get('/sign/{filename}', [AuthController::class, 'getFile']);
     Route::apiResource('subs', SubscriptionController::class);
     Route::post('/invite-learner', [SubscriptionController::class, 'addLearnersToMySubscription']);
     Route::get('/invited-learners/{id}', [SubscriptionController::class, 'getInvitedLearners']);
@@ -70,23 +105,36 @@ Route::prefix('auth')->middleware(['jwt.auth', 'role:admin,user'])->group(functi
 });
 
 Route::prefix('learning')->middleware(['jwt.auth', 'role:admin,user'])->group(function () {
+    Route::put('/publish-requests', [PublishRequestController::class, 'update']);
+    Route::get('/rejected-publish-remark/{course_id}', [PublishRequestController::class, 'getRejectedPublishRemark']);
+    Route::apiResource('/publish-requests', PublishRequestController::class);
     Route::apiResource('exam-requests', ExamRequestController::class);
-    Route::put('exam-requests/approve/{id}', [ExamRequestController::class, 'approveExamRequest']);
-    Route::put('exam-requests/authorize/{id}', [ExamRequestController::class, 'authorizeExamRequest']);
+    Route::put('exam-requests', [ExamRequestController::class, 'update']);
+    Route::put('undo-rejected-exam-requests', [ExamRequestController::class, 'undoReject']);
+    Route::get('/final-exam/questions/{courseID}', [AssessmentAttemptController::class, 'getFinalExamQuestions']);
+    Route::post('/final-exam', [AssessmentAttemptController::class, 'storeFinalExam']);
+
+    Route::post('courses/{course_id}/discussions/{id}', [CourseDiscussionController::class, 'update']);
     Route::apiResource('courses/{course_id}/discussions', CourseDiscussionController::class);
     Route::apiResource('assessement-attempts', AssessmentAttemptController::class);
-    Route::get('comments/{id}', [CourseDiscussionController::class, 'getPostChildren']);
+
+    Route::apiResource('courses/certificate-requests', CertificateRequestController::class);
+    Route::put('/courses/certificate-requests', [CertificateRequestController::class, 'update']);
+    Route::put('courses/undo-rejected-certificate-requests', [CertificateRequestController::class, 'undoReject']);
+    Route::post('courses/group-certificate-requests', [CertificateRequestController::class, 'groupRequest']);
+
     Route::apiResource('topics', TopicController::class);
     Route::apiResource('questions', QuestionController::class);
     Route::apiResource('choices', ChoiceController::class);
     Route::apiResource('modules', ModuleController::class);
-    Route::apiResource('courses/{course_id}/certificate-requests', CertificateRequestController::class);
-    Route::put('courses/{course_id}/approve-certificate-requests', [CertificateRequestController::class, 'approveRequest']);
-    Route::put('courses/{course_id}/reject-certificate-requests', [CertificateRequestController::class, 'rejectRequest']);
-    Route::put('courses/{course_id}/authorize-certificate-requests', [CertificateRequestController::class, 'authorizeRequest']);
-    Route::post('courses/{course_id}/group-certificate-requests', [CertificateRequestController::class, 'groupRequest']);
 });
 
-Route::prefix('social')->middleware(['jwt.auth'])->group(function () {
+Route::prefix('social')->group(function () {
+    Route::apiResource('/letters', LetterController::class);
+    Route::get('/my-activity', [ActivityLogController::class, 'getMyActivity']);
     Route::apiResource('/chats', ChatMessagesController::class);
+    Route::apiResource('/polls', PollController::class);
+    Route::get('/get-chosers/{choiceId}', [PollController::class, 'getPollChosers']);
+    Route::put('/choose-poll/{id}', [PollChoiceController::class, 'update']);
+    Route::apiResource('/ratings', RatingController::class);
 });
