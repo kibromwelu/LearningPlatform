@@ -21,7 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->render(function (Throwable $e, Request $request) {
 
-            dd($e->getMessage());
+            // dd($e->getMessage());
             // dd($e->getMessage());
 
             if ($e instanceof QueryException) {
