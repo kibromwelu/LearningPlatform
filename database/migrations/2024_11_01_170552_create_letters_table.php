@@ -15,9 +15,11 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->timestamp('date');
             $table->string('subject');
+            $table->string('refNumber');
+            $table->String('language')->default('english');
             $table->string('to');
             $table->longText('message');
-            $table->string('carbon_copy_to');
+            $table->json('carbon_copy_to');
             $table->string('created_by');
             $table->foreign('created_by')->references('id')->on('identities');
             $table->timestamps();

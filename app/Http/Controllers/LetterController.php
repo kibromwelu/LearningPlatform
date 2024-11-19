@@ -16,13 +16,14 @@ class LetterController extends Controller
      */
     public function index()
     {
-        $response = Letter::get();
-        $imgPath = 'data:image/jpg;base64,' . base64_encode(
-            file_get_contents(
-                storage_path('/app/public/AlNU3WTK_400x400.jpg')
-            )
-        );
-        return Pdf::loadView('letter', ['name' => 'Kibrom', 'image_path' => $imgPath, 'data' => $response])->stream('preview.pdf', ['Attachment' => false]);
+        $response = Letter::with('writer')->get();
+        return response()->json(['error'=>false, 'message'=>"success", 'data' => $response], 200);
+        // $imgPath = 'data:image/jpg;base64,' . base64_encode(
+        //     file_get_contents(
+        //         storage_path('/app/public/image.png')
+        //     )
+        // );
+        // return Pdf::loadView('letter', ['name' => 'Kibrom', 'image_path' => $imgPath, 'data' => $response])->stream('preview.pdf', ['Attachment' => false]);
     }
 
 

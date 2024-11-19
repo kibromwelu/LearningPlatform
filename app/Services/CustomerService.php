@@ -12,6 +12,8 @@ use App\Http\Requests\RegistrationStep4Request;
 use App\Services\GeolocationService;
 
 use Exception;
+use Illuminate\Support\Facades\Log;
+
 class CustomerService
 {
     // public static function registerCustomer(Request $request)
@@ -66,6 +68,8 @@ class CustomerService
 
     public static function postStep3(Request $request, $identity_id){
         $data = $request->all();
+        Log::info($data);
+
         $data['identity_id'] = $identity_id;
         $identity = Identity::updateIdentity($data,$identity_id);
         
@@ -105,6 +109,7 @@ class CustomerService
     public static function postStep5(Request $request, $identity_id)
     {
         $data = $request->all();
+        Log::info($data);
         $data['identity_id'] = $identity_id ;
         $user = User::registerUser($data);
         // $logDevice = LoggedinDevices::register($user['user']->id, $request->ip());

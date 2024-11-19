@@ -23,10 +23,12 @@ class StoreLetterRequest extends FormRequest
     {
         return [
             'date' => 'date',
-            'To' => 'string|required',
+            'language'=>'string',
+            'refNumber' => 'string',
+            'to' => 'string|required',
             'subject' => 'string|required',
             'message' => 'string|required',
-            'carbon_copy_to' => 'string|required'
+            'carbon_copy_to' => 'array|required'
         ];
     }
 }

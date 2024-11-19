@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Log;
 
 class Rating extends Model
 {
@@ -15,6 +16,7 @@ class Rating extends Model
         'rated_type',
         'rated_id',
         'rating',
+        'remark',
         'is_helpful'
     ];
     public function rated()
@@ -29,15 +31,14 @@ class Rating extends Model
 
     public static function store($data)
     {
+        Log::info($data);
         $data['rater_id'] = Auth()->user()->identity_id;
-        $data['rated_id'] = $data['rated'];
 
-        if ($data['type'] == 'user') {
+        if ($data['rated_type'] == 'user') {
             $data['rated_type'] = Identity::class;
         } else {
             $data['rated_type'] = Course::class;
         }
-        unset($data['rated']);
         return self::create($data);
     }
 

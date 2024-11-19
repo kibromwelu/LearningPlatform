@@ -15,7 +15,6 @@ class Address extends Model
         'identity_id',
         'residence_id',
         'phone',
-        'phone',
         'email',
         'website',
         'pobox',

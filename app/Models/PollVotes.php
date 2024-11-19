@@ -13,6 +13,7 @@ class PollVotes extends Model
     protected $fillable = [
         'user_id',
         'poll_id',
+        // 'selected_by',
         'poll_choice_id'
     ];
     public function poll()

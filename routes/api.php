@@ -129,7 +129,7 @@ Route::prefix('learning')->middleware(['jwt.auth', 'role:admin,user'])->group(fu
     Route::apiResource('modules', ModuleController::class);
 });
 
-Route::prefix('social')->group(function () {
+Route::prefix('social')->middleware(['jwt.auth', 'role:admin,user'])->group(function () {
     Route::apiResource('/letters', LetterController::class);
     Route::get('/my-activity', [ActivityLogController::class, 'getMyActivity']);
     Route::apiResource('/chats', ChatMessagesController::class);

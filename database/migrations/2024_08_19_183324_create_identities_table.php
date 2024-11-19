@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('skin_color')->nullable();
             $table->string('eye_color')->nullable();
             $table->string('disability')->nullable();
+            $table->string('isoCode')->nullable();
             $table->string('state')->default("null");
             $table->json('completed_steps')->nullable();
             $table->string('status')->default('active');

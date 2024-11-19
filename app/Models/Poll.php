@@ -46,6 +46,7 @@ class Poll extends Model
         return self::with('user')->with(['choices' => function ($query) {
             $query->withCount('votes'); // Count the votes for each choice
         }])->withCount('votes')->find($pollId);
+        
         return self::with('user', 'choices', 'votes')->withCount('votes')->find($pollId);
     }
     public static function store($data)

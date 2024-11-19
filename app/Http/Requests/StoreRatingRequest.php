@@ -23,10 +23,12 @@ class StoreRatingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'rating' => 'integer|max:5|min:0',
-            'rated' => 'uuid',
+                    
+            'rating' => 'integer|max:5|min:0',//value
+            'rated_id' => 'uuid',//id
+            'is_helpful'=>'boolean',
             'remark' => 'string',
-            "type" => 'required|string|in:user,course',
+            "rated_type" => 'required|string|in:user,course',// either 'course' or 'user'
         ];
     }
 }
