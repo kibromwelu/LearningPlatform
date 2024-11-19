@@ -34,6 +34,8 @@ class CourseDiscussionController extends Controller
      */
     public function store(StoreCourseDiscussionRequest $request, $course_id)
     {
+        // dd($request->validated());
+        Log::info($request->validated());
         return CourseDiscussionService::storePost($request, $course_id);
     }
 

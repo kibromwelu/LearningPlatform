@@ -5,6 +5,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Taymon\JWT\Exceptions\TokenExpiredException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -23,7 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
             // dd($e->getMessage());
             // dd($e->getMessage());
-
+            Log::info($e);
             if ($e instanceof QueryException) {
                 Log::error('Query exception: ' . $e->getMessage());
                 return response()->json(['message' => $e->getMessage(), 'error' => true], 500);

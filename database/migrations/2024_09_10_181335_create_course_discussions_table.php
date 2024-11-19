@@ -15,7 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->foreignUuid('parent_id')->nullable();
             $table->string('message');
-            $table->string('filename');
+            $table->string('filenames');
             $table->string('state')->default('1');
             $table->foreignUuid('learner_id');
             $table->foreignUuid('course_id');
