@@ -43,7 +43,8 @@ class PollController extends Controller
 
     public function update(UpdatePollRequest $request, Poll $poll)
     {
-        //
+        $response = Poll::updatePoll($request->validated(), $poll);
+        return response()->json(['error' => false, 'message' => "updated successfully", 'data' => $response], 202);
     }
 
     /**
@@ -51,6 +52,7 @@ class PollController extends Controller
      */
     public function destroy(Poll $poll)
     {
-        //
+        $response = $poll->delete();
+        return response()->json(['error' => false, 'message' => "deleted successfully"], 202);
     }
 }

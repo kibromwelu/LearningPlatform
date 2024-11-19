@@ -46,12 +46,11 @@ class Poll extends Model
         return self::with('user')->with(['choices' => function ($query) {
             $query->withCount('votes'); // Count the votes for each choice
         }])->withCount('votes')->find($pollId);
-        
+
         return self::with('user', 'choices', 'votes')->withCount('votes')->find($pollId);
     }
     public static function store($data)
     {
-
         DB::beginTransaction();
         try {
             $poll = [];
@@ -74,5 +73,11 @@ class Poll extends Model
             Db::rollBack();
             throw new Exception('something went wrong' . $th, 400);
         }
+    }
+    public static function updatePoll($data, Poll $poll)
+    {
+        // dd($data);
+        $poll->update($data);
+        return $poll;
     }
 }

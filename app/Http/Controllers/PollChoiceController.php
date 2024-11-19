@@ -7,6 +7,7 @@ use App\Http\Requests\StorePollChoiceRequest;
 use App\Http\Requests\UpdateChoiceRequest;
 use App\Http\Requests\UpdatePollChoiceRequest;
 use App\Models\PollVotes;
+use Illuminate\Http\Request;
 
 class PollChoiceController extends Controller
 {
@@ -20,12 +21,19 @@ class PollChoiceController extends Controller
         $response = PollVotes::choosePoll($request->validated(), $pollId);
         return response()->json(['error' => false, 'message' => 'chose successfully', 'data' => $response], 202);
     }
+    public function updateChoice(Request $request,  $choiceId)
+    {
+        // dd($choice);
+        $choice = PollChoice::find($choiceId);
+        $data['content'] = $request->content;
+        $choice->update($data);
+        // dd($choice['content']);
+        return response()->json(['error' => false, 'message' => 'updated successfully', 'data' => $choice], 202);
+    }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(PollChoice $pollChoice)
     {
-        //
+        $pollChoice->delete();
+        return response()->json(['error' => false, 'message' => 'deleted successfully'], 200);
     }
 }

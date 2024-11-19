@@ -11,7 +11,7 @@ class UpdatePollRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,8 @@ class UpdatePollRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'content' => 'string|required',
+            'expires_at' => 'time-stamp',
         ];
     }
 }

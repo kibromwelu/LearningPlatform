@@ -136,5 +136,6 @@ Route::prefix('social')->middleware(['jwt.auth', 'role:admin,user'])->group(func
     Route::apiResource('/polls', PollController::class);
     Route::get('/get-chosers/{choiceId}', [PollController::class, 'getPollChosers']);
     Route::put('/choose-poll/{id}', [PollChoiceController::class, 'update']);
+    Route::put('choices/{choice_id}', [PollChoiceController::class, 'updateChoice']);
     Route::apiResource('/ratings', RatingController::class);
 });
