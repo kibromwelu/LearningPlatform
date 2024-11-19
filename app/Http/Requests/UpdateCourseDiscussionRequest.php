@@ -23,7 +23,7 @@ class UpdateCourseDiscussionRequest extends FormRequest
     {
         return [
             'message' => 'string',
-            'filenames' => 'array',
+            'filenames' => 'nullable|array',
         ];
     }
 }

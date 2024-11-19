@@ -24,7 +24,8 @@ class Letter extends Model
     protected $casts = [
         'carbon_copy_to' => 'array',
     ];
-    public  function writer(){
+    public  function writer()
+    {
         return $this->belongsTo(Identity::class, 'created_by');
     }
     public static function store($data)
@@ -33,5 +34,10 @@ class Letter extends Model
         $data['carbon_copy_to'] = $data['carbon_copy_to'];
         $data['created_by'] = Auth()->user()->identity_id;
         return self::create($data);
+    }
+    public static function updateLetter($data, Letter $letter)
+    {
+        $letter->update($data);
+        return $letter;
     }
 }

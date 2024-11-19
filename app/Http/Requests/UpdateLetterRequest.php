@@ -22,7 +22,13 @@ class UpdateLetterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'date' => 'date|nullable',
+            'language' => 'string|nullable',
+            'refNumber' => 'string|nullable',
+            'to' => 'string|nullable',
+            'subject' => 'string|nullable',
+            'message' => 'string|nullable',
+            'carbon_copy_to' => 'array|nullable'
         ];
     }
 }

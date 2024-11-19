@@ -17,7 +17,7 @@ class LetterController extends Controller
     public function index()
     {
         $response = Letter::with('writer')->get();
-        return response()->json(['error'=>false, 'message'=>"success", 'data' => $response], 200);
+        return response()->json(['error' => false, 'message' => "success", 'data' => $response], 200);
         // $imgPath = 'data:image/jpg;base64,' . base64_encode(
         //     file_get_contents(
         //         storage_path('/app/public/image.png')
@@ -43,12 +43,14 @@ class LetterController extends Controller
 
     public function update(UpdateLetterRequest $request, Letter $letter)
     {
-        //
+        $response = Letter::updateLetter($request->validated(), $letter);
+        return response()->json(['error' => false, 'message' => 'updated successfuly', 'data' => $response], 202);
     }
 
 
     public function destroy(Letter $letter)
     {
-        //
+        $letter->delete();
+        return response()->json(['error' => false, 'message' => 'deleted successfuly'], 200);
     }
 }
