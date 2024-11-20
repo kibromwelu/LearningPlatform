@@ -23,8 +23,9 @@ class StoreLetterRequest extends FormRequest
     {
         return [
             'date' => 'date',
-            'language'=>'string',
+            'language' => 'string',
             'refNumber' => 'string',
+            'address' => 'string',
             'to' => 'string|required',
             'subject' => 'string|required',
             'message' => 'string|required',

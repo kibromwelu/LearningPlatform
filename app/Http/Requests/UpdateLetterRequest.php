@@ -25,6 +25,7 @@ class UpdateLetterRequest extends FormRequest
             'date' => 'date|nullable',
             'language' => 'string|nullable',
             'refNumber' => 'string|nullable',
+            'address' => 'nullable|string',
             'to' => 'string|nullable',
             'subject' => 'string|nullable',
             'message' => 'string|nullable',
