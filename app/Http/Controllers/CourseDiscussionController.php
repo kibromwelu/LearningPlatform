@@ -58,8 +58,8 @@ class CourseDiscussionController extends Controller
      */
     public function update(UpdateCourseDiscussionRequest $request, $course_id, $discussionId)
     {
-
-        $response = CourseDiscussionservice::updatePost($request->validated(), $discussionId);
+        // Log::info($request->validated());
+        $response = CourseDiscussionservice::updatePost($request, $discussionId);
         return response()->json(['error' => false, 'message' => "updated", 'data' => $response], 202);
     }
 
@@ -69,7 +69,7 @@ class CourseDiscussionController extends Controller
     public function destroy($course_id, $discussionId)
     {
         $res = CourseDiscussion::removePost($discussionId);
-        dd($res);
+        // dd($res);
         return response()->json(['error' => false, 'message' => "Item deleted"], 202);
     }
 }

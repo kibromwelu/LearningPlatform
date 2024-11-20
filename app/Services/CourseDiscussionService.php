@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\CourseDiscussion;
 use App\Http\Requests\StoreCourseDiscussionRequest;
+use App\Http\Requests\UpdateCourseDiscussionRequest;
 use App\Services\FileService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -37,10 +38,12 @@ class CourseDiscussionService
         return response()->json(['error' => false, 'message' => "created successfuly", 'discussion' => $response,], 201);
     }
 
-    public static function updatePost($request, $id)
+    public static function updatePost(UpdateCourseDiscussionRequest $request, $id)
     {
         // dd($request);
-        $data = $request;
+        $data = $request->validated();
+        // Log::info($data);
+        $file_link = '';
         DB::beginTransaction();
         try {
             if ($request['filenames']) {
@@ -59,14 +62,14 @@ class CourseDiscussionService
                 }
                 $file_link = url('/') . '/api/auth/post-file/';
                 $data['filenames'] = json_encode($filenames);
-                // dd(gettype($data['filenames']));
+            }
                 $response = CourseDiscussion::updatePost($data, $id);
                 $response->filepath = $file_link;
                 $response->filenames = json_decode($response->filenames);
                 // dd($response);
                 DB::commit();
                 return $response;
-            }
+            
         } catch (Exception $th) {
             DB::rollBack();
             throw $th;

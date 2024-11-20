@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 use function PHPUnit\Framework\throwException;
 
@@ -93,6 +94,7 @@ class CourseDiscussion extends Model
     public static function updatePost($data, $id)
     {
 
+        Log::info("MMMMMMMMMMMMMM", $data);
         $post = self::find($id);
 
         $post->update($data);
@@ -113,6 +115,8 @@ class CourseDiscussion extends Model
             $post->discussions->transform(function ($comment) use ($userId) {
                 $comment->is_mine = $comment->learner_id === $userId;
                 $comment->filenames = json_decode($comment->filenames);
+                $comment->filepath =  url('/api/auth/post-file/');
+
 
                 // $comment->filename = $comment->filename ? url('/api/auth/post-file/' . $comment->filename) : null;
                 $comment->time_ago = Carbon::parse($comment->created_at)->diffForHumans();
