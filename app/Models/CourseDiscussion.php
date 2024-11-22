@@ -36,7 +36,7 @@ class CourseDiscussion extends Model
 
     public function learner()
     {
-        return $this->belongsTo(Learner::class, 'learner_id');
+        return $this->belongsTo(Identity::class, 'learner_id');
     }
     public function course()
     {
@@ -104,7 +104,7 @@ class CourseDiscussion extends Model
 
     public static function getAll($course_id)
     {
-        $discussions = self::with('learner.identity', 'course', 'discussions.learner.identity')->where('course_id', $course_id)->whereNull('parent_id')->orderBy('created_at', 'desc')->get();
+        $discussions = self::with('learner', 'course', 'discussions.learner')->where('course_id', $course_id)->whereNull('parent_id')->orderBy('created_at', 'desc')->get();
         $userId = Auth()->user()->identity_id;
         return $discussions->transform(function ($post) use ($userId) {
             $post->is_mine = $post->learner_id === $userId;
@@ -128,7 +128,7 @@ class CourseDiscussion extends Model
     public static function getOne($id)
     {
 
-        $discussion = self::with('learner.identity', 'course', 'discussions')->find($id);
+        $discussion = self::with('learner', 'course', 'discussions.learner')->find($id);
         if ($discussion) {
             $discussion->filepath = url('/api/auth/post-file/');
             $discussion->filenames = $discussion->filenames;
@@ -173,7 +173,7 @@ class CourseDiscussion extends Model
 
     public static function getPostFile($filename)
     {
-        $filepath = 'posts/';
+        $filepath = '/posts/';
         return  FileService::getFile($filepath, $filename);
     }
 }

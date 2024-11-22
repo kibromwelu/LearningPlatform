@@ -39,40 +39,41 @@ class CourseDiscussionService
     }
 
     public static function updatePost(UpdateCourseDiscussionRequest $request, $id)
-    {
-        // dd($request);
-        $data = $request->validated();
-        // Log::info($data);
-        $file_link = '';
-        DB::beginTransaction();
-        try {
-            if ($request['filenames']) {
-                $filenames = [];
-                $discussion = CourseDiscussion::getOne($id);
-                // dd($discussion);
-                if ($discussion->filenames) {
-                    foreach (json_decode($discussion->filenames) as $filename) {
-                        FileService::deleteFile('posts/', $filename);
-                    }
-                }
-                foreach ($request['filenames'] as $file) {
-                    $path = 'posts/';
-                    $filename = FileService::storeFile($path, $file);
-                    array_push($filenames, $filename);
-                }
-                $file_link = url('/') . '/api/auth/post-file/';
-                $data['filenames'] = json_encode($filenames);
+{
+    $data = $request->validated();
+    $file_link = '';  // Base URL for file links
+    DB::beginTransaction();
+    try {
+        // Initialize filenames array
+        $discussion = CourseDiscussion::getOne($id);
+        
+        $filenames = $request->has('filenames.existing') ? $request->input('filenames.existing'): [];
+        // Handle new photos (files)
+        if ($request->hasFile('filenames.new')) {
+            $newPhotos = $request->file('filenames.new');
+            foreach ($newPhotos as $file) {
+                $path = 'posts/';
+                $filename = FileService::storeFile($path, $file);
+                $filenames[] = $filename;  // Store the new filename
             }
-                $response = CourseDiscussion::updatePost($data, $id);
-                $response->filepath = $file_link;
-                $response->filenames = json_decode($response->filenames);
-                // dd($response);
-                DB::commit();
-                return $response;
-            
-        } catch (Exception $th) {
-            DB::rollBack();
-            throw $th;
         }
+
+        // Set the file URL for frontend (for new uploaded files)
+        $file_link = url('/') . '/api/auth/post-file/';
+        $data['filenames'] = json_encode($filenames);  // Combine existing and new filenames
+
+        // Update the post data in the database
+        $response = CourseDiscussion::updatePost($data, $id);
+        $response->filepath = $file_link;
+        $response->filenames = json_decode($response->filenames);  // Return filenames in the response
+
+        DB::commit();
+        return $response;
+
+    } catch (Exception $th) {
+        DB::rollBack();
+        throw $th;
     }
+}
+
 }

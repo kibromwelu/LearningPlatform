@@ -46,7 +46,9 @@ class Identity extends Model
     {
         return $this->hasOne(Profile::class);
     }
-
+    public function discussion(){
+        return $this->hasMany(CourseDiscussion::class);
+    }
     public function userAccounts()
     {
         return $this->hasOne(User::class);
