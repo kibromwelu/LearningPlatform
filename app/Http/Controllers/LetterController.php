@@ -33,8 +33,6 @@ class LetterController extends Controller
         $response = Letter::store($request->validated());
         return response()->json(['error' => false, 'message' => 'created successfuly', 'data' => $response], 201);
     }
-
-
     public function show($letter)
     {
 
@@ -46,8 +44,6 @@ class LetterController extends Controller
         $response = Letter::updateLetter($request->validated(), $letter);
         return response()->json(['error' => false, 'message' => 'updated successfuly', 'data' => $response], 202);
     }
-
-
     public function destroy(Letter $letter)
     {
         $letter->delete();

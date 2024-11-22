@@ -14,6 +14,7 @@ class Letter extends Model
     protected $fillable = [
         'date',
         'to',
+        'address',
         'language',
         'refNumber',
         'subject',
@@ -30,13 +31,14 @@ class Letter extends Model
     }
     public static function store($data)
     {
-        // Log::info($data);
+        Log::info($data);
         $data['carbon_copy_to'] = $data['carbon_copy_to'];
         $data['created_by'] = Auth()->user()->identity_id;
         return self::create($data);
     }
     public static function updateLetter($data, Letter $letter)
     {
+        Log::info($data);
         $letter->update($data);
         return $letter;
     }

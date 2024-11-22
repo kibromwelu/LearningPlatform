@@ -37,6 +37,7 @@ class RatingController extends Controller
      */
     public function destroy(Rating $rating)
     {
-        //
+        $rating->delete();
+        return response()->json(['error' => false, 'message' => 'Deleted Successfully'], 200);
     }
 }
