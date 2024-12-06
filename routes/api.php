@@ -88,7 +88,7 @@ Route::prefix('auth')->middleware(['jwt.auth', 'role:admin,user'])->group(functi
     Route::put('/change-creator-state', [CourseCreatorRequestController::class, 'changeState']);
     Route::get('/sign/{filename}', [AuthController::class, 'getFile']);
     Route::apiResource('subs', SubscriptionController::class);
-    // Route::post('subs/manage-subscription', [SubscriptionController::class, 'manageSubscription']);
+    Route::put('manage-subscription', [SubscriptionController::class, 'manageSubscription']);
     Route::post('/invite-learner', [SubscriptionController::class, 'addLearnersToMySubscription']);
     Route::get('/invited-learners/{id}', [SubscriptionController::class, 'getInvitedLearners']);
     Route::delete('/remove-learners/{id}', [SubscriptionController::class, 'removeLearners']);

@@ -26,6 +26,14 @@ class Subscription extends Model
         'added_learners',
         'enrolled_courses',
         'subscription_id',
+        'ceo_id',
+        'ceo_sign_id',
+        'ceo_action',
+        'ceo_action_date',
+        'accountant_id',
+        'accountant__sign_id',
+        'accountant_action',
+        'accountant_action_date',
         'state'
     ];
 
@@ -38,7 +46,14 @@ class Subscription extends Model
     {
         return $this->belongsTo(Identity::class, 'identity_id');
     }
-
+    public function ceo()
+    {
+        return $this->belongsTo(Identity::class, 'ceo_id');
+    }
+    public function accountant()
+    {
+        return $this->belongsTo(Identity::class, 'accountant_id');
+    }
     // Boot method to set up model event handling
     protected static function boot()
     {
@@ -124,12 +139,14 @@ class Subscription extends Model
         if ($state) {
             $query->where('state', $state);
         }
-        $query->with('ceo', 'accountant');
+        $query->with('ceo', 'accountant', 'identity');
         return $query->get();
     }
 
     public static function manageSubscription($data)
     {
+        Log::info($data);
+        $remark = $data['remark'] ?? null;
         $user = Auth()->user();
         $time = Carbon::now();
         $sign = Signature::where('identity_id', $user->identity_id)->where('state', 'active')->first();
@@ -138,13 +155,13 @@ class Subscription extends Model
         $examRequests = self::whereIn('id', $data['subscriptionIds'])->get();
         foreach ($examRequests as $request) {
             if ($data['state'] == 'approve') {
-                $request->update(['state' => 'approved', 'clo_id' => $user->identity_id, 'accountant_action' => 'approve', 'accountant_action_date' => $time, 'accountant_sign_id' => $sign->id]);
+                $request->update(['state' => 'approved', 'remark' => $remark, 'clo_id' => $user->identity_id, 'accountant_action' => 'approve', 'accountant_action_date' => $time, 'accountant_sign_id' => $sign->id]);
             } elseif ($data['state'] == 'authorize') {
-                $request->update(['state' => 'authorized', 'ceo_id' => $user->identity_id, 'ceo_action' => 'authorize', 'ceo_action_date' => $time, 'ceo_sign_id' => $sign->id]);
+                $request->update(['state' => 'authorized', 'remark' => $remark, 'ceo_id' => $user->identity_id, 'ceo_action' => 'authorize', 'ceo_action_date' => $time, 'ceo_sign_id' => $sign->id]);
             } elseif ($data['state'] == 'ceo-reject') {
-                $request->update(['state' => 'ceo-rejected', 'ceo_id' => $user->identity_id, 'ceo_action' => 'reject', 'ceo_action_date' => $time, 'ceo_sign_id' => $sign->id]);
+                $request->update(['state' => 'ceo-rejected', 'remark' => $remark, 'ceo_id' => $user->identity_id, 'ceo_action' => 'reject', 'ceo_action_date' => $time, 'ceo_sign_id' => $sign->id]);
             } elseif ($data['state'] == 'accountant-reject') {
-                $request->update(['state' => 'accountant-rejected', 'accountant_id' => $user->identity_id, 'accountant_action' => 'reject', 'accountant_action_date' => $time, 'accountant_sign_id' => $sign->id]);
+                $request->update(['state' => 'accountant-rejected', 'remark' => $remark, 'accountant_id' => $user->identity_id, 'accountant_action' => 'reject', 'accountant_action_date' => $time, 'accountant_sign_id' => $sign->id]);
             }
         }
         return $examRequests;

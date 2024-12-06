@@ -19,13 +19,10 @@ class SubscriptionController extends Controller
      */
     public function index()
     {
-        //
 
-        // return response()->json(['location' => $location]);
-        // dd($location);
-        $subscriptions = Subscription::all();
+        $subscriptions = Subscription::getAll();
+        Log::info("GetAll");
         return response()->json(['error' => false, 'items' => $subscriptions], 200);
-        // }/
     }
 
 
@@ -53,7 +50,7 @@ class SubscriptionController extends Controller
     {
 
         $subscription = Subscription::getMySubscription($identity_id);
-        return response()->json(['error' => false, 'items' => $subscription]);
+        return response()->json(['error' => false, 'message' => 'success', 'items' => $subscription]);
     }
 
 
@@ -82,11 +79,9 @@ class SubscriptionController extends Controller
     public function getMySubscriptions()
     {
         $user = auth()->user();
-        Log::info('jhhhl');
-        return;
         $subscriptions = Subscription::getMySubscriptions($user->identity_id);
         return response()->json(['error' => false, 'message' => 'success', 'data' => $subscriptions]);
-        dd($subscriptions);
+        // dd($subscriptions);
     }
 
     public function getInvitedLearners($subscription_id)
@@ -102,9 +97,13 @@ class SubscriptionController extends Controller
         SubscriptionService::removeLearnerFromSubs($subscription_id, $request->learner_id);
         return response()->json(['error' => false, 'message' => "You have removed the learner from your package"], 202);
     }
-    public function manageSubscription(Request $request)
+    public function approveSubscription($subscription_id)
+    {
+        dd($subscription_id);
+    }
+    public static function manageSubscription(Request $request)
     {
         $response = Subscription::manageSubscription($request->all());
-        return response()->json(['error' => false, 'message' => '', 'data' => $response]);
+        return response()->json(['error' => false, 'message' => 'success', 'data' => $response], 202);
     }
 }

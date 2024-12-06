@@ -33,8 +33,8 @@ class CertificateRequest extends Model
         'created_at',
         'updated_at',
         'deleted_at',
-        'clo_action_date',
-        'ceo_action_date',
+        // 'clo_action_date',
+        // 'ceo_action_date',
 
 
     ];

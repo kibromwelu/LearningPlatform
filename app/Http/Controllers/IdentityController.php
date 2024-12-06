@@ -25,7 +25,8 @@ class IdentityController extends Controller
 
 
 
-        return Identity::getAll($request->numOfItems);
+        $response =  Identity::getAll($request->numOfItems);
+        return response()->json(['error' => false, 'message' => 'success', 'data' => $response], 200);
     }
 
     /**

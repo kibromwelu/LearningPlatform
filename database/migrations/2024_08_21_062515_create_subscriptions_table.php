@@ -34,11 +34,12 @@ return new class extends Migration
             $table->string('accountant_action')->nullable();
             $table->string('accountant_action_date')->nullable();
             $table->string('accountant_sign_id')->nullable();
-            $table->string('state')->default(Constants::DEFAULT_STATE);
             $table->foreign('ceo_id')->references('id')->on('identities');
             $table->foreign('ceo_sign_id')->references('id')->on('signatures');
             $table->foreign('accountant_id')->references('id')->on('identities');
             $table->foreign('accountant_sign_id')->references('id')->on('signatures');
+            $table->string('remark')->nullable();
+            $table->string('state')->default(Constants::DEFAULT_STATE);
             $table->softDeletes();
             $table->timestamps();
         });
