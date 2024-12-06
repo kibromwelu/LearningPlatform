@@ -131,14 +131,18 @@ class CertificateRequest extends Model
 
     public static function updateRequest($data)
     {
+       
 
         $user = Auth()->user();
         $time = Carbon::now();
         $sign = Signature::where('identity_id', $user->identity_id)->where('state', 'active')->first();
 
         Log::info($data['requestIds']);
-        $examRequests = self::whereIn('id', $data['requestIds'])->get();
-        foreach ($examRequests as $request) {
+        $certificateRequests = self::whereIn('id', $data['requestIds'])->get();
+        $state = $data['state'];
+        foreach ($certificateRequests as $request) {
+            $enrollment = CourseEnrollment::findOrFail($request->enrollment_id);
+            $enrollment->update(['state' => $state == 'ceo-reject' || $state == 'clo-reject'? 'pending' : ($state == 'authorize'? 'certified':'certificate_requested')]);
             if ($data['state'] == 'approve') {
                 $request->update(['state' => 'approved', 'clo_id' => $user->identity_id, 'clo_action' => 'approve', 'clo_action_date' => $time, 'clo_sign_id' => $sign->id]);
             } elseif ($data['state'] == 'authorize') {
@@ -149,7 +153,7 @@ class CertificateRequest extends Model
                 $request->update(['state' => 'clo-rejected', 'clo_id' => $user->identity_id, 'clo_action' => 'reject', 'clo_action_date' => $time, 'clo_sign_id' => $sign->id]);
             }
         }
-        return $examRequests;
+        return $certificateRequests;
     }
     public static function deleteRequest($iid)
     {

@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('chat_messages', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('content');
+            $table->string('content')->nullable();
             $table->string('filename')->nullable();
+            $table->string('filetype')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

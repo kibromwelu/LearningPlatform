@@ -22,7 +22,8 @@ class StoreCertificateRequestRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'enrollment_id' => 'uuid|required'
+            'enrollment_id' => 'uuid|required',
+            'state' => 'nullable|string|max:255'
         ];
     }
 }

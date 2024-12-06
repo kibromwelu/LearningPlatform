@@ -23,7 +23,7 @@ class AssessmentAttemptService
         $score = 0;
         $count = Topic::getOne($data['topic_id'])->number_of_questions_to_ask;
         $newData['state'] = 'completed';
-        dd($newData);
+        // dd($newData);
         LearnerProgress::updateProgess($newData, $data['topic_id'], $data['enrollment_id']);
 
         CourseEnrollment::incrementTopics($enrollment_id);

@@ -14,6 +14,13 @@ class FileService
         $file->storeAs('public/' . $path, $filename);
         return $filename;
     }
+    public static function storeAttachment($path, $file)
+    {
+        $filename = time() . '_' . $file->getClientOriginalName();
+        $file->storeAs('public/' . $path, $filename);
+        $fileType = $file->getMimeType();
+        return [$filename, $fileType];
+    }
 
     public static function getFile($path, $filename)
     {

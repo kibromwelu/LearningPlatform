@@ -15,8 +15,11 @@ class ChatService
     {
         $user_id = Auth()->user()->identity_id;
         if (isset($data['filename'])) {
-            $data['filename'] = FileService::storeFile('/posts/', $data['filename']);
+            $response = FileService::storeAttachment('/posts/', $data['filename']);
+            $data['filename'] = $response[0];
+            $data['filetype'] = $response[1];
         }
+        // return $data;
         DB::beginTransaction();
         try {
             $message = ChatMessages::store($data);

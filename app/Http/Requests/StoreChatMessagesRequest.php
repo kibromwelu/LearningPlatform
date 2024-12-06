@@ -23,7 +23,7 @@ class StoreChatMessagesRequest extends FormRequest
     {
         return [
             'filename'=>'file',
-            'content'=>'string|required'
+            'content'=>'nullable|string'
         ];
     }
 }

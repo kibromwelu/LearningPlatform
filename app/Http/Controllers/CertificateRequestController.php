@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\CertificateRequest;
 use App\Http\Requests\StoreCertificateRequestRequest;
 use App\Http\Requests\UpdateCertificateRequestRequest;
+use App\Models\CourseEnrollment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CertificateRequestController extends Controller
 {
@@ -25,9 +27,16 @@ class CertificateRequestController extends Controller
      */
     public function store(StoreCertificateRequestRequest $request)
     {
-        //
-        $response = CertificateRequest::register($request->validated());
-        return response()->json(['error' => false, 'message' => 'success', 'data' => $response], 201);
+        return DB::transaction(function () use ($request) {
+            $response = CertificateRequest::register($request->validated());
+            if ($request->state && $request->state == 'approve')
+                CertificateRequest::updateRequest([
+                    'state' => $request->state,
+                    'requestIds' => [$response->id]
+                ]);
+            CourseEnrollment::findOrFail($request->enrollment_id)->update(['state' => 'certificate_requested']);
+            return response()->json(['error' => false, 'message' => 'success', 'data' => $response], 201);
+        });
     }
 
 

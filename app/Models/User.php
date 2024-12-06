@@ -8,6 +8,7 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 use App\Services\GeoLocationservice;
 use Exception;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Notifications\Notifiable;
@@ -39,6 +40,9 @@ class User extends Authenticatable implements JWTSubject
     public function setPasswordAttribute($value)
     {
         $this->attributes['password'] = Hash::make($value);
+    }
+    public function identity(){
+        return $this->belongsTo(Identity::class)->select('first_name', 'last_name', 'id');
     }
     public static function forgotPassword(Request $request)
     {

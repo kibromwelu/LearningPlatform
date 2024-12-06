@@ -13,7 +13,7 @@ class ChatMessages extends Model
     use HasFactory;
     use HasUuids;
     use SoftDeletes;
-    protected $fillable = ['content', 'filename', 'state'];
+    protected $fillable = ['content', 'filename', 'filetype', 'state'];
     public function userMessages()
     {
         return $this->hasMany(UserMessage::class, 'message_id');

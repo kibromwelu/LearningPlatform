@@ -14,13 +14,13 @@ class RatingController extends Controller
     public function index()
     {
         $response = Rating::getAll();
-        return response()->json(['error' => false, 'message' => 'created', 'data' => $response], 201);
+        return response()->json(['error' => false, 'message' => 'success', 'data' => $response], 201);
     }
 
     public function store(StoreRatingRequest $request)
     {
         $response = Rating::store($request->validated());
-        return response()->json(['error' => true, 'message' => 'created', 'data' => $response], 201);
+        return response()->json(['error' => false, 'message' => 'created', 'data' => $response], 201);
     }
 
 

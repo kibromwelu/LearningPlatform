@@ -35,8 +35,10 @@ class ChatMessagesController extends Controller
      */
     public function store(StoreChatMessagesRequest $request)
     {
-        //
-        Log::info("RRRR");
+        Log::info("DDFDDFDdfd");
+        return;
+        Log::info($request->validated());
+        Log::info($request->friend_id);
         $response = ChatService::storeChat($request->validated(), $request->friend_id);
         Log::info("message: $response");
         return response()->json(['error' => false, 'message' => 'sent', 'data' => $response], 201);

@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -19,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \App\Http\Middleware\CheckRole::class
         ]);
     })
+    
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->render(function (Throwable $e, Request $request) {
 
@@ -52,4 +54,6 @@ return Application::configure(basePath: dirname(__DIR__))
             }
             return response()->json(['error' => true, 'message' => 'Error: ' . $e->getMessage()], 500);
         });
-    })->create();
+    })
+    ->create();
+

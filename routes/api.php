@@ -71,9 +71,9 @@ Route::prefix('auth')->group(function () {
     Route::apiResource('identities', IdentityController::class);
     Route::apiResource('address', AddressController::class);
 
+    Route::get('enrollments/course/{courseId}', [CourseEnrollmentController::class, 'index']);
     Route::apiResource('courses', CourseController::class);
     Route::apiResource('enrollments', CourseEnrollmentController::class);
-    Route::get('courses/{course}/enrollments', [CourseEnrollmentController::class, 'index']);
     Route::get('/get-my-enrollments', [CourseEnrollmentController::class, 'getMyEnrollments']);
     Route::apiResource('learner-progress', LearnerProgressController::class);
     Route::apiResource('ans-logs', AnswerLogController::class);

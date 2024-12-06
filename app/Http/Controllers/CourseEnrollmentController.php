@@ -7,20 +7,19 @@ use App\Services\CourseEnrollmentService;
 use App\Models\CourseEnrollment;
 use App\Http\Requests\StoreCourseEnrollmentRequest;
 use App\Http\Requests\UpdateCourseEnrollmentRequest;
-
+use Illuminate\Support\Facades\Log;
 
 class CourseEnrollmentController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index($course_id,Request $request)
+    public function index(Request $request, $courseId)
     {
-        $response = CourseEnrollment::getAll($course_id,$request);
+        $response = CourseEnrollment::getAll($courseId,$request);
         return response()->json(['error'=>false, 'message'=>'success', 'data'=>$response],200);
     }
 
-    
 
     /**
      * Store a newly created resource in storage.
