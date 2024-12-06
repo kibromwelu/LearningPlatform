@@ -24,7 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
             // dd($e->getMessage());
             // dd($e->getMessage());
-            Log::info($e);
+            Log::info($e->getMessage());
             if ($e instanceof QueryException) {
                 Log::error('Query exception: ' . $e->getMessage());
                 return response()->json(['message' => $e->getMessage(), 'error' => true], 500);

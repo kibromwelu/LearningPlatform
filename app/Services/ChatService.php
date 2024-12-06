@@ -6,6 +6,7 @@ use App\Models\ChatMessages;
 use App\Models\UserMessage;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ChatService
 {
@@ -34,8 +35,8 @@ class ChatService
             ];
             $store = UserMessage::store($senderCopy, $receiverCopy);
             DB::commit();
+            Log::info($store);
             return UserMessage::getOne($store->id);
-           
         } catch (\Throwable $th) {
             DB::rollBack();
             throw new \Exception('Something went wrong' . $th, 400);
@@ -52,10 +53,11 @@ class ChatService
         return UserMessage::deleteMessage($userMessageId, $forWhom);
     }
 
-    public static function updateMessage($data, $userMessageId){
+    public static function updateMessage($data, $userMessageId)
+    {
         $message = UserMessage::getOne($userMessageId);
-        if($message && $message->role == 'sender'){
-          return ChatMessages::updateChat($message->message_id, $data);
+        if ($message && $message->role == 'sender') {
+            return ChatMessages::updateChat($message->message_id, $data);
         }
         throw new \Exception('You can\'t update this message', 400);
     }

@@ -23,8 +23,8 @@ class RegistrationStep4Request extends FormRequest
     {
         return [
             //
-            'profile_pic' => 'required|mimes:jpg,png,jpeg,gif|max:2048',
-            'cover' => 'mimes:jpg,png,jpeg,gif|max:2048',
+            'profile_pic' => 'required|mimes:jpg,png,jpeg,gif', //|max:2048
+            'cover' => 'nullable|mimes:jpg,png,jpeg,gif|max:2048',
         ];
     }
 }

@@ -77,9 +77,7 @@ class CourseDiscussion extends Model
     public static function register($data)
     {
 
-        // dd($data);
         $post = self::create($data);
-        // dd($post->id);
         $activity = [
             "identity_id" => Auth()->user()->identity_id,
             'action_type' => 'post',

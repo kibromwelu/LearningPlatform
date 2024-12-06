@@ -22,7 +22,6 @@ class RegistrationStep5Request extends FormRequest
     public function rules(): array
     {
         return [
-            //
             'username' => 'required|string|min:3',
             'password' => 'required|string|min:3',
         ];

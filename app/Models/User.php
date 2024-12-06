@@ -32,6 +32,10 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->role === $role;
     }
+    public function identity()
+    {
+        return $this->belongsTo(Identity::class);
+    }
     public function setPasswordAttribute($value)
     {
         $this->attributes['password'] = Hash::make($value);
@@ -60,7 +64,7 @@ class User extends Authenticatable implements JWTSubject
     }
     public static function getUsers($num)
     {
-        return self::paginate(20);
+        return self::with('identity')->paginate(20);
     }
 
     public static function updateUser($data, $id)

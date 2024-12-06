@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        
+
         Schema::create('subscriptions', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('identity_id');
@@ -26,7 +26,19 @@ return new class extends Migration
             $table->string('mode');
             $table->decimal('payment', 8, 2);
             $table->string('currency');
+            $table->string('ceo_id', 36)->nullable();
+            $table->string('ceo_action')->nullable();
+            $table->string('ceo_action_date')->nullable();
+            $table->string('ceo_sign_id')->nullable();
+            $table->string('accountant_id', 36)->nullable();
+            $table->string('accountant_action')->nullable();
+            $table->string('accountant_action_date')->nullable();
+            $table->string('accountant_sign_id')->nullable();
             $table->string('state')->default(Constants::DEFAULT_STATE);
+            $table->foreign('ceo_id')->references('id')->on('identities');
+            $table->foreign('ceo_sign_id')->references('id')->on('signatures');
+            $table->foreign('accountant_id')->references('id')->on('identities');
+            $table->foreign('accountant_sign_id')->references('id')->on('signatures');
             $table->softDeletes();
             $table->timestamps();
         });

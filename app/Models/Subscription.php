@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Log;
 
 class Subscription extends Model
 {
@@ -56,7 +58,6 @@ class Subscription extends Model
             $user = Auth()->user();
             // $subscription = Subscription::find($data['subscription_id']);
         };
-
         if (isset($data['subscription_id']) && Subscription::where('identity_id', $data['identity_id'])->where('subscription_id', $data['subscription_id'])->exists()) {
             throw new \Exception("Learner is already invited.", 400);
         } else if (isset($data['subscription_id']) && $data['identity_id'] == $user->identity_id) {
@@ -104,7 +105,6 @@ class Subscription extends Model
     public static function removeLearnerFromSubscription($subscription_id, $learner_id)
     {
         $subscription = self::where('subscription_id', $subscription_id)->where('identity_id', $learner_id)->first();
-        // dd($subscription);
         if (!$subscription) {
             throw new \Exception("subscription not found", 404);
         } else if ($subscription->state == 'approved') {
@@ -116,5 +116,37 @@ class Subscription extends Model
     public static function getOne($id)
     {
         return self::where('id', $id)->first();
+    }
+    public static function getAll($state = null)
+    {
+        $state = request()->query('state');  // Get 'state' from query parameters
+        $query = self::query();
+        if ($state) {
+            $query->where('state', $state);
+        }
+        $query->with('ceo', 'accountant');
+        return $query->get();
+    }
+
+    public static function manageSubscription($data)
+    {
+        $user = Auth()->user();
+        $time = Carbon::now();
+        $sign = Signature::where('identity_id', $user->identity_id)->where('state', 'active')->first();
+
+        Log::info($data['subscriptionIds']);
+        $examRequests = self::whereIn('id', $data['subscriptionIds'])->get();
+        foreach ($examRequests as $request) {
+            if ($data['state'] == 'approve') {
+                $request->update(['state' => 'approved', 'clo_id' => $user->identity_id, 'accountant_action' => 'approve', 'accountant_action_date' => $time, 'accountant_sign_id' => $sign->id]);
+            } elseif ($data['state'] == 'authorize') {
+                $request->update(['state' => 'authorized', 'ceo_id' => $user->identity_id, 'ceo_action' => 'authorize', 'ceo_action_date' => $time, 'ceo_sign_id' => $sign->id]);
+            } elseif ($data['state'] == 'ceo-reject') {
+                $request->update(['state' => 'ceo-rejected', 'ceo_id' => $user->identity_id, 'ceo_action' => 'reject', 'ceo_action_date' => $time, 'ceo_sign_id' => $sign->id]);
+            } elseif ($data['state'] == 'accountant-reject') {
+                $request->update(['state' => 'accountant-rejected', 'accountant_id' => $user->identity_id, 'accountant_action' => 'reject', 'accountant_action_date' => $time, 'accountant_sign_id' => $sign->id]);
+            }
+        }
+        return $examRequests;
     }
 }

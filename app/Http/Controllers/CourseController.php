@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
+use App\Services\FileService;
 use Illuminate\Http\Request;
 
 class CourseController extends Controller
@@ -16,7 +17,11 @@ class CourseController extends Controller
         return response()->json(['error' => false, 'message' => 'success', 'data' => $response]);
     }
 
-
+    public function downloadFile($filename)
+    {
+        return FileService::downloadFile('/posts/', $filename);
+        return response()->json();
+    }
 
     /**
      * Store a newly created resource in storage.

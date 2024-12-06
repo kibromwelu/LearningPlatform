@@ -41,10 +41,8 @@ use Illuminate\Support\Facades\Route;
 // use Mockery\Generator\StringManipulation\Pass\Pass;
 
 Route::prefix('auth')->group(function () {
+    Route::get('file-download/{filename}', [CourseController::class, 'downloadFile']);
     Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
-
-
-
     Route::post('/secure-link', function () {
         $url = URL::temporarySignedRoute('secure.route', now()->addMinutes(1), ['user' => 1]);
         return $url;
@@ -53,8 +51,6 @@ Route::prefix('auth')->group(function () {
     Route::post('reset-password/{token}', [AuthController::class, 'resetPassword']);
     Route::apiResource('cv', CVTemplateController::class);
     Route::get('/cv-file/{filename}', [CVTemplateController::class, 'getTemplateFile']);
-
-
     Route::apiResource('/signatures', SignatureController::class);
     Route::get('/my-devices/{id}', [LoggedinDevicesController::class, 'getMyDevices']);
     Route::get('/profile-pic/{filename}', [ProfileController::class, 'getProfilePic']);
@@ -86,14 +82,13 @@ Route::prefix('auth')->middleware(['jwt.auth', 'role:admin,user'])->group(functi
     Route::put('reset-password-request', [PasswordResetRequestController::class, 'update']);
     Route::post('reset-authorized-requests', [PasswordResetRequestController::class, 'resetApprovedRequests']);
     Route::apiResource('/reset-password-request', PasswordResetRequestController::class);
-
     Route::apiResource('create-course', CourseCreatorRequestController::class);
-
     Route::put('refund-request/change-state', [RefundRequestController::class, 'update']);
     Route::apiResource('refund-request', RefundRequestController::class);
     Route::put('/change-creator-state', [CourseCreatorRequestController::class, 'changeState']);
     Route::get('/sign/{filename}', [AuthController::class, 'getFile']);
     Route::apiResource('subs', SubscriptionController::class);
+    // Route::post('subs/manage-subscription', [SubscriptionController::class, 'manageSubscription']);
     Route::post('/invite-learner', [SubscriptionController::class, 'addLearnersToMySubscription']);
     Route::get('/invited-learners/{id}', [SubscriptionController::class, 'getInvitedLearners']);
     Route::delete('/remove-learners/{id}', [SubscriptionController::class, 'removeLearners']);

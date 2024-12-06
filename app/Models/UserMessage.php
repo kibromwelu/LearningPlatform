@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Log;
 
 class UserMessage extends Model
 {
@@ -45,17 +46,20 @@ class UserMessage extends Model
     {
 
         self::create($receiver);
+        Log::info('Sender');
+        Log::info($sender);
         return  self::create($sender);
     }
     public static function getAll($friendId, $skip = null, $count = null)
     {
+
         $messages = UserMessage::where('identity_id', Auth()->user()->identity_id)
             ->where('friend_id', $friendId)
-            ->orderBy('created_at', 'asc')
-            ->skip($skip ?? 0)
-            ->take($count ?? 10)
-            ->with('message')
-            ->get();
+            ->orderBy('created_at', 'asc')->get();
+        // ->skip($skip ?? 0)
+        // // ->take($count ?? 10)
+        // ->with('message')
+        // ->get();
         ChatMessages::updateSeenMessagesState(
             self::filterReceivedMessages($messages)
         );

@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateChatMessagesRequest;
 use App\Models\UserMessage;
 use App\Services\ChatService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class ChatMessagesController extends Controller
 {
@@ -17,6 +18,7 @@ class ChatMessagesController extends Controller
     public function index($friend_id)
     {
         $response = ChatService::getAll($friend_id);
+        Log::info($response);
         return response()->json(['error' => false, 'message' => 'success', 'data' => $response], 200);
     }
 
@@ -34,7 +36,9 @@ class ChatMessagesController extends Controller
     public function store(StoreChatMessagesRequest $request)
     {
         //
+        Log::info("RRRR");
         $response = ChatService::storeChat($request->validated(), $request->friend_id);
+        Log::info("message: $response");
         return response()->json(['error' => false, 'message' => 'sent', 'data' => $response], 201);
     }
 
